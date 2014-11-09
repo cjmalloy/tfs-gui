@@ -13,4 +13,9 @@ public class Controller<T>
     {
         EVENT_BUS.post(model);
     }
+
+    public void updateAll()
+    {
+        update();
+    }
 }

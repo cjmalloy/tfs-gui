@@ -41,7 +41,6 @@ public class MainView implements View
     public MainView()
     {
         Controller.EVENT_BUS.register(this);
-        MainController.get().update();
     }
 
     @Override

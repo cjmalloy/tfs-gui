@@ -10,4 +10,22 @@ public class EditorController extends Controller<EditorModel>
     {
         this.model = model;
     }
+
+    public boolean hasUnsavedChanges()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void saveAll()
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void closeAll()
+    {
+        // TODO Auto-generated method stub
+
+    }
 }
