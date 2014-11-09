@@ -9,9 +9,14 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+/**
+ * Model the file system as a tree.
+ *
+ * @author chris
+ *
+ */
 public class FileTreeModel implements TreeModel
 {
-
     private File root;
 
     private List<TreeModelListener> listeners = new ArrayList<>();

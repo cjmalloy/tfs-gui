@@ -7,7 +7,7 @@ public class Controller<T>
 {
     public static final EventBus EVENT_BUS = new EventBus();
 
-    protected T model;
+    public T model;
 
     public void update()
     {

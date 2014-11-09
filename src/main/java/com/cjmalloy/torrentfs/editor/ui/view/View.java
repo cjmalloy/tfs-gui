@@ -1,11 +1,11 @@
 package com.cjmalloy.torrentfs.editor.ui.view;
 
-import java.awt.Component;
 import java.awt.Dimension;
 
+import com.cjmalloy.torrentfs.editor.ui.HasLayout;
 
-public interface View
+
+public interface View extends HasLayout
 {
-    Component getLayout();
     void onResize(Dimension dim);
 }
