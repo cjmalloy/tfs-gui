@@ -91,7 +91,7 @@
               </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>com.cjmalloy.torrentfs.server.Entry</mainClass>
+                  <mainClass>com.cjmalloy.torrentfs.editor.Entry</mainClass>
                 </transformer>
                 <!--  use transformer to handle merge of META-INF/services -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />

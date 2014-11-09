@@ -1,9 +1,11 @@
 package com.cjmalloy.torrentfs.editor.ui.view;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
@@ -18,10 +20,14 @@ import com.cjmalloy.torrentfs.editor.ui.skin.IconBundle;
 import com.google.common.eventbus.Subscribe;
 
 
-
 public class MainView implements View
 {
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
+
+    private static final int TOOLBAR_HEIGHT = 50;
+    private static final int DEFAULT_SPLIT = 300;
+    private static final int MIN_SPLIT_LEFT = 100;
+    private static final int MIN_SPLIT_RIGHT = 100;
 
     private JPanel layout;
     private JSplitPane splitPane;
@@ -44,13 +50,33 @@ public class MainView implements View
         if (layout == null)
         {
             layout = new JPanel();
-            layout.add(getSplitPane(), BorderLayout.CENTER);
+            layout.setLayout(null);
+            layout.add(getSplitPane());
         }
         return layout;
     }
 
+    @Override
+    public void onResize(Dimension dim)
+    {
+        getLayout().setSize(dim);
+        getSplitPane().setSize(dim);
+        onSliderMove(dim);
+    }
+
+    private void onSliderMove(Dimension dim)
+    {
+        if (dim.width == 0) return;
+        int l = getSplitPane().getDividerLocation();
+        int r = dim.width - l - getSplitPane().getDividerSize();
+        getLeftArea().setSize(l, dim.height);
+        getToolbar().setSize(l, TOOLBAR_HEIGHT);
+        getFilesystemView().onResize(new Dimension(l, dim.height - TOOLBAR_HEIGHT));
+        getEditorView().onResize(new Dimension(r, dim.height));
+    }
+
     @Subscribe
-    protected void update(MainDocument model)
+    public void update(MainDocument model)
     {
 
     }
@@ -60,6 +86,7 @@ public class MainView implements View
         if (editorView == null)
         {
             editorView = new EditorView();
+            editorView.getLayout().setMinimumSize(new Dimension(MIN_SPLIT_RIGHT, 0));
         }
         return editorView;
     }
@@ -75,7 +102,7 @@ public class MainView implements View
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    // TODO Auto-generated method stub
+                    MainController.get().export();
                 }
             });
         }
@@ -96,8 +123,12 @@ public class MainView implements View
         if (leftArea == null)
         {
             leftArea = new JPanel();
-            leftArea.add(getToolbar(), BorderLayout.PAGE_START);
-            leftArea.add(getFilesystemView().getLayout(), BorderLayout.CENTER);
+            leftArea.setLayout(null);
+            leftArea.setMinimumSize(new Dimension(MIN_SPLIT_LEFT, 0));
+            leftArea.add(getToolbar());
+            leftArea.add(getFilesystemView().getLayout());
+            getToolbar().setLocation(0, 0);
+            getFilesystemView().getLayout().setLocation(0, TOOLBAR_HEIGHT);
         }
         return leftArea;
     }
@@ -113,7 +144,7 @@ public class MainView implements View
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    // TODO Auto-generated method stub
+                    MainController.get().open();
                 }
             });
         }
@@ -125,6 +156,15 @@ public class MainView implements View
         if (splitPane == null)
         {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getLeftArea(), getEditorView().getLayout());
+            splitPane.setDividerLocation(DEFAULT_SPLIT);
+            splitPane.addPropertyChangeListener(new PropertyChangeListener()
+            {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt)
+                {
+                    onSliderMove(getLayout().getSize());
+                }
+            });
         }
         return splitPane;
     }
@@ -134,6 +174,7 @@ public class MainView implements View
         if (toolbar == null)
         {
             toolbar = new JToolBar();
+            toolbar.setFloatable(false);
             toolbar.add(getOpenButton());
             toolbar.add(getExportButton());
         }
