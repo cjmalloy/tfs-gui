@@ -9,11 +9,11 @@ import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent;
 import com.google.common.eventbus.Subscribe;
 
 
-public class OpenWorkspaceDialog extends Dialog
+public class OpenFolderDialog extends Dialog
 {
     private JFileChooser chooser = new JFileChooser();
 
-    public OpenWorkspaceDialog(JFrame parent)
+    public OpenFolderDialog(JFrame parent)
     {
         super(parent);
 

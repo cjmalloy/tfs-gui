@@ -1,15 +1,15 @@
 package com.cjmalloy.torrentfs.editor.ui.dialog;
 
-import javax.swing.JFrame;
+import java.awt.Frame;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 
 
 public abstract class Dialog
 {
-    protected JFrame parent;
+    protected Frame parent;
 
-    public Dialog(JFrame parent)
+    public Dialog(Frame parent)
     {
         this.parent = parent;
         Controller.EVENT_BUS.register(this);

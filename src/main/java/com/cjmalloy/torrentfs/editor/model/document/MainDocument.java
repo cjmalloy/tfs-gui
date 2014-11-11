@@ -8,6 +8,4 @@ public class MainDocument
 {
     public FileSystemModel fileSystemModel = new FileSystemModel();
     public EditorModel editorModel = new EditorModel();
-
-    public boolean exitNow = false;
 }

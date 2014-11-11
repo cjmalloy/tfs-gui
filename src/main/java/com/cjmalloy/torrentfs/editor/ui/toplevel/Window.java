@@ -11,9 +11,12 @@ import javax.swing.JFrame;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
-import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
+import com.cjmalloy.torrentfs.editor.event.ShutdownNowEvent;
+import com.cjmalloy.torrentfs.editor.ui.dialog.ErrorDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.ExportDialog;
-import com.cjmalloy.torrentfs.editor.ui.dialog.OpenWorkspaceDialog;
+import com.cjmalloy.torrentfs.editor.ui.dialog.MessageDialog;
+import com.cjmalloy.torrentfs.editor.ui.dialog.OpenFolderDialog;
+import com.cjmalloy.torrentfs.editor.ui.dialog.ProgressDialog;
 import com.cjmalloy.torrentfs.editor.ui.view.View;
 import com.google.common.eventbus.Subscribe;
 
@@ -75,8 +78,11 @@ public class Window implements TopLevel
 
         Controller.EVENT_BUS.register(this);
 
-        new OpenWorkspaceDialog(frame);
+        new OpenFolderDialog(frame);
         new ExportDialog(frame);
+        new MessageDialog(frame);
+        new ErrorDialog(frame);
+        new ProgressDialog(frame);
     }
 
     @Override
@@ -100,6 +106,16 @@ public class Window implements TopLevel
         view.onResize(frame.getSize());
     }
 
+    @Subscribe
+    public void onShutdownNow(ShutdownNowEvent event)
+    {
+        synchronized (lock)
+        {
+            exitNow = true;
+            lock.notify();
+        }
+    }
+
     @Override
     public void setView(View v)
     {
@@ -113,19 +129,6 @@ public class Window implements TopLevel
             frame.add(view.getLayout());
             view.onResize(frame.getSize());
             frame.revalidate();
-        }
-    }
-
-    @Subscribe
-    public void update(MainDocument model)
-    {
-        if (model.exitNow)
-        {
-            synchronized (lock)
-            {
-                exitNow = true;
-                lock.notify();
-            }
         }
     }
 }
