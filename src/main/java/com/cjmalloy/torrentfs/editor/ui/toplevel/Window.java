@@ -5,16 +5,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.util.ResourceBundle;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
-import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
+import com.cjmalloy.torrentfs.editor.ui.dialog.ExportDialog;
+import com.cjmalloy.torrentfs.editor.ui.dialog.OpenWorkspaceDialog;
 import com.cjmalloy.torrentfs.editor.ui.view.View;
 import com.google.common.eventbus.Subscribe;
 
@@ -75,6 +74,9 @@ public class Window implements TopLevel
         });
 
         Controller.EVENT_BUS.register(this);
+
+        new OpenWorkspaceDialog(frame);
+        new ExportDialog(frame);
     }
 
     @Override
@@ -96,20 +98,6 @@ public class Window implements TopLevel
         if (view == null) return;
 
         view.onResize(frame.getSize());
-    }
-
-    @Subscribe
-    public void open(OpenFolderEvent event)
-    {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showOpenDialog(frame);
-
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            File file = chooser.getSelectedFile();
-            event.callback.withFolder(file.toPath());
-        }
     }
 
     @Override
