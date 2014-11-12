@@ -33,6 +33,7 @@ public class SettingsDialog<T>
      * */
     public static final int CLOSED_OPTION = -1;
 
+    private Frame parent;
     private JDialog dialog;
     private JPanel layout;
     private SettingsComponent<T> child;
@@ -42,9 +43,9 @@ public class SettingsDialog<T>
 
     public SettingsDialog(Frame parent, String title, SettingsComponent<T> child)
     {
+        this.parent = parent;
         dialog = new JDialog(parent, title, true);
         dialog.add(getLayout(child.getLayout()));
-        dialog.pack();
         dialog.addWindowListener(new WindowAdapter()
         {
             @Override
@@ -62,6 +63,8 @@ public class SettingsDialog<T>
 
     public int showSettingsDialog()
     {
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
         return lastResponse;
     }

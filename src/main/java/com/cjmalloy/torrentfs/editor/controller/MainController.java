@@ -1,8 +1,6 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
-import java.net.URI;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -142,7 +140,7 @@ public class MainController extends Controller<MainDocument>
                 List<Torrent> torrents = TfsUtil.generateTorrentFromTfs(
                     fileSystem.model.workspace.toFile(),
                     Encoding.BENCODE_BASE64,
-                    Arrays.asList(Arrays.asList(new URI("udb://opentracker.org/"))),
+                    settings.getAnnounce(),
                     "tfs-gui"
                 );
                 publish(0.5);
