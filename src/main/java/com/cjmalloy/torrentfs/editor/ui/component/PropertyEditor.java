@@ -12,7 +12,7 @@ import com.google.common.eventbus.Subscribe;
 
 public class PropertyEditor implements FileEditorFacet
 {
-    private JPanel layout;
+    private JPanel widget;
 
     private EditorFileController controller;
 
@@ -29,13 +29,13 @@ public class PropertyEditor implements FileEditorFacet
     }
 
     @Override
-    public Component getLayout()
+    public Component getWidget()
     {
-        if (layout == null)
+        if (widget == null)
         {
-            layout = new JPanel();
+            widget = new JPanel();
         }
-        return layout;
+        return widget;
     }
 
     @Subscribe

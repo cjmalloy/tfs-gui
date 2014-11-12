@@ -14,7 +14,7 @@ import com.google.common.eventbus.Subscribe;
 public class TextEditor implements FileEditorFacet
 {
 
-    private JScrollPane layout;
+    private JScrollPane widget;
     private JTextArea textArea;
     private EditorFileController controller;
 
@@ -31,13 +31,13 @@ public class TextEditor implements FileEditorFacet
     }
 
     @Override
-    public JScrollPane getLayout()
+    public JScrollPane getWidget()
     {
-        if (layout == null)
+        if (widget == null)
         {
-            layout = new JScrollPane(getTextArea());
+            widget = new JScrollPane(getTextArea());
         }
-        return layout;
+        return widget;
     }
 
     @Subscribe

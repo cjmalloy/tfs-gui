@@ -9,16 +9,16 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import com.cjmalloy.torrentfs.editor.ui.HasLayout;
+import com.cjmalloy.torrentfs.editor.ui.HasWidget;
 import com.cjmalloy.torrentfs.editor.ui.layoutmanager.ButtonAreaLayout;
 
 
-public class OkCancelButtons implements HasLayout
+public class OkCancelButtons implements HasWidget
 {
 
     private static final Insets BUTTON_INSETS = new Insets(2, 8, 2, 8);
 
-    private JPanel layout;
+    private JPanel widget;
     private JButton okButton;
     private JButton cancelButton;
 
@@ -32,17 +32,17 @@ public class OkCancelButtons implements HasLayout
     }
 
     @Override
-    public JPanel getLayout()
+    public JPanel getWidget()
     {
-        if (layout == null)
+        if (widget == null)
         {
-            layout = new JPanel();
-            layout.setLayout(new ButtonAreaLayout(true, 6, SwingConstants.RIGHT, false));
-            layout.setBorder(UIManager.getBorder("OptionPane.buttonAreaBorder"));
-            layout.add(getOkButton());
-            layout.add(getCancelButton());
+            widget = new JPanel();
+            widget.setLayout(new ButtonAreaLayout(true, 6, SwingConstants.RIGHT, false));
+            widget.setBorder(UIManager.getBorder("OptionPane.buttonAreaBorder"));
+            widget.add(getOkButton());
+            widget.add(getCancelButton());
         }
-        return layout;
+        return widget;
     }
 
     public void setDelegate(OkCancelDelegate delegate)

@@ -11,12 +11,12 @@ import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel.EditFacet;
-import com.cjmalloy.torrentfs.editor.ui.HasLayout;
+import com.cjmalloy.torrentfs.editor.ui.HasWidget;
 import com.cjmalloy.torrentfs.editor.ui.component.FileEditorFacet.FileEditorFactory;
 import com.google.common.eventbus.Subscribe;
 
 
-public class FacetContainer implements HasLayout
+public class FacetContainer implements HasWidget
 {
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
@@ -34,7 +34,7 @@ public class FacetContainer implements HasLayout
         {
             FileEditorFacet e = FileEditorFactory.create(facet, controller);
             facetEditors.add(e);
-            getLayout().addTab(getTitle(facet), e.getLayout());
+            getWidget().addTab(getTitle(facet), e.getWidget());
         }
         Controller.EVENT_BUS.register(this);
     }
@@ -51,7 +51,7 @@ public class FacetContainer implements HasLayout
     }
 
     @Override
-    public JTabbedPane getLayout()
+    public JTabbedPane getWidget()
     {
         if (tabs == null)
         {

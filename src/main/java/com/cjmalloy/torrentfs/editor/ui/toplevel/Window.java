@@ -121,12 +121,12 @@ public class Window implements TopLevel
     {
         if (this.view != null)
         {
-            frame.remove(view.getLayout());
+            frame.remove(view.getWidget());
         }
         this.view = v;
         if (this.view != null)
         {
-            frame.add(view.getLayout());
+            frame.add(view.getWidget());
             view.onResize(frame.getSize());
             frame.revalidate();
         }

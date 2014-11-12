@@ -29,7 +29,7 @@ public class MainView implements View
     private static final int MIN_SPLIT_LEFT = 100;
     private static final int MIN_SPLIT_RIGHT = 100;
 
-    private JPanel layout;
+    private JPanel widget;
     private JSplitPane splitPane;
     private JPanel leftArea;
     private EditorView editorView;
@@ -44,21 +44,21 @@ public class MainView implements View
     }
 
     @Override
-    public Component getLayout()
+    public Component getWidget()
     {
-        if (layout == null)
+        if (widget == null)
         {
-            layout = new JPanel();
-            layout.setLayout(null);
-            layout.add(getSplitPane());
+            widget = new JPanel();
+            widget.setLayout(null);
+            widget.add(getSplitPane());
         }
-        return layout;
+        return widget;
     }
 
     @Override
     public void onResize(Dimension dim)
     {
-        getLayout().setSize(dim);
+        getWidget().setSize(dim);
         getSplitPane().setSize(dim);
         onSliderMove(dim);
     }
@@ -85,7 +85,7 @@ public class MainView implements View
         if (editorView == null)
         {
             editorView = new EditorView();
-            editorView.getLayout().setMinimumSize(new Dimension(MIN_SPLIT_RIGHT, 0));
+            editorView.getWidget().setMinimumSize(new Dimension(MIN_SPLIT_RIGHT, 0));
         }
         return editorView;
     }
@@ -125,9 +125,9 @@ public class MainView implements View
             leftArea.setLayout(null);
             leftArea.setMinimumSize(new Dimension(MIN_SPLIT_LEFT, 0));
             leftArea.add(getToolbar());
-            leftArea.add(getFilesystemView().getLayout());
+            leftArea.add(getFilesystemView().getWidget());
             getToolbar().setLocation(0, 0);
-            getFilesystemView().getLayout().setLocation(0, TOOLBAR_HEIGHT);
+            getFilesystemView().getWidget().setLocation(0, TOOLBAR_HEIGHT);
         }
         return leftArea;
     }
@@ -154,14 +154,14 @@ public class MainView implements View
     {
         if (splitPane == null)
         {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getLeftArea(), getEditorView().getLayout());
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getLeftArea(), getEditorView().getWidget());
             splitPane.setDividerLocation(DEFAULT_SPLIT);
             splitPane.addPropertyChangeListener(new PropertyChangeListener()
             {
                 @Override
                 public void propertyChange(PropertyChangeEvent evt)
                 {
-                    onSliderMove(getLayout().getSize());
+                    onSliderMove(getWidget().getSize());
                 }
             });
         }

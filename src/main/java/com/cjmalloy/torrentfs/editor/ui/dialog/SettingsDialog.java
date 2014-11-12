@@ -45,7 +45,7 @@ public class SettingsDialog<T>
     {
         this.parent = parent;
         dialog = new JDialog(parent, title, true);
-        dialog.add(getLayout(child.getLayout()));
+        dialog.add(getLayout(child.getWidget()));
         dialog.addWindowListener(new WindowAdapter()
         {
             @Override
@@ -101,7 +101,7 @@ public class SettingsDialog<T>
             layout = new JPanel();
             layout.setLayout(new BoxLayout(layout, BoxLayout.PAGE_AXIS));
             layout.add(child);
-            layout.add(getButtons().getLayout());
+            layout.add(getButtons().getWidget());
         }
         return layout;
     }

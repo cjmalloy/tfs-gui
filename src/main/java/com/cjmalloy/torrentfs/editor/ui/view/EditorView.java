@@ -26,7 +26,7 @@ public class EditorView implements View
     }
 
     @Override
-    public JTabbedPane getLayout()
+    public JTabbedPane getWidget()
     {
         if (tabs == null)
         {
@@ -38,7 +38,7 @@ public class EditorView implements View
     @Override
     public void onResize(Dimension dim)
     {
-        getLayout().setSize(dim.width, dim.height);
+        getWidget().setSize(dim.width, dim.height);
     }
 
     @Subscribe
@@ -51,7 +51,7 @@ public class EditorView implements View
                 FacetContainer e = new FacetContainer(f);
                 files.add(f);
                 fileEditors.add(e);
-                getLayout().addTab(f.getTitle(), e.getLayout());
+                getWidget().addTab(f.getTitle(), e.getWidget());
             }
         }
         for (int i=files.size()-1; i>=0; i--)
@@ -63,14 +63,14 @@ public class EditorView implements View
                 e.close();
                 fileEditors.remove(i);
                 files.remove(i);
-                getLayout().remove(e.getLayout());
+                getWidget().remove(e.getWidget());
             }
         }
 
         if (currentEditor != model.activeFile)
         {
             currentEditor = model.activeFile;
-            getLayout().setSelectedIndex(currentEditor);
+            getWidget().setSelectedIndex(currentEditor);
         }
     }
 

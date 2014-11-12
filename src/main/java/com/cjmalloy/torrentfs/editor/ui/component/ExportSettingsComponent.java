@@ -30,7 +30,7 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
 
     private static final Dimension INPUT_SIZE = new Dimension(300, 30);
 
-    private JPanel layout;
+    private JPanel widget;
     private JPanel torrentSaveDir;
     private JTextField torrentSaveDirInput;
     private JButton torrentSaveDirBrowse;
@@ -45,16 +45,16 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
     }
 
     @Override
-    public Component getLayout()
+    public Component getWidget()
     {
-        if (layout == null)
+        if (widget == null)
         {
-            layout = new JPanel();
-            layout.setLayout(new BoxLayout(layout, BoxLayout.PAGE_AXIS));
-            layout.add(getTorrentSaveDir());
-            layout.add(getTrackers());
+            widget = new JPanel();
+            widget.setLayout(new BoxLayout(widget, BoxLayout.PAGE_AXIS));
+            widget.add(getTorrentSaveDir());
+            widget.add(getTrackers());
         }
-        return layout;
+        return widget;
     }
 
     @Override

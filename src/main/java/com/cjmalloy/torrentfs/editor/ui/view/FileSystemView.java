@@ -19,7 +19,7 @@ import com.google.common.eventbus.Subscribe;
 
 public class FileSystemView implements View
 {
-    private JScrollPane layout;
+    private JScrollPane widget;
     private JTree tree;
 
     private Path workspace = null;
@@ -30,19 +30,19 @@ public class FileSystemView implements View
     }
 
     @Override
-    public JScrollPane getLayout()
+    public JScrollPane getWidget()
     {
-        if (layout == null)
+        if (widget == null)
         {
-            layout = new JScrollPane(getTree());
+            widget = new JScrollPane(getTree());
         }
-        return layout;
+        return widget;
     }
 
     @Override
     public void onResize(Dimension dim)
     {
-        getLayout().setSize(dim.width, dim.height);
+        getWidget().setSize(dim.width, dim.height);
     }
 
     @Subscribe

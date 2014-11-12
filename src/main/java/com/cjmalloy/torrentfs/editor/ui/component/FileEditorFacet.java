@@ -2,10 +2,10 @@ package com.cjmalloy.torrentfs.editor.ui.component;
 
 import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel.EditFacet;
-import com.cjmalloy.torrentfs.editor.ui.HasLayout;
+import com.cjmalloy.torrentfs.editor.ui.HasWidget;
 
 
-public interface FileEditorFacet extends HasLayout
+public interface FileEditorFacet extends HasWidget
 {
     void close();
 
