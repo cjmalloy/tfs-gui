@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.nio.file.Path;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
@@ -18,6 +19,7 @@ import com.google.common.eventbus.Subscribe;
 
 public class FileSystemView implements View
 {
+    private JScrollPane layout;
     private JTree tree;
 
     private Path workspace = null;
@@ -28,32 +30,13 @@ public class FileSystemView implements View
     }
 
     @Override
-    public JTree getLayout()
+    public JScrollPane getLayout()
     {
-        if (tree == null)
+        if (layout == null)
         {
-            tree = new JTree();
-            tree.addMouseListener(new MouseAdapter()
-            {
-                public void mousePressed(MouseEvent e)
-                {
-                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                    if (selRow != -1)
-                    {
-                        if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON2)
-                        {
-                            showMenu(selRow, selPath);
-                        }
-                        else if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
-                        {
-                            edit(selRow, selPath);
-                        }
-                    }
-                }
-            });
+            layout = new JScrollPane(getTree());
         }
-        return tree;
+        return layout;
     }
 
     @Override
@@ -89,6 +72,34 @@ public class FileSystemView implements View
     private void edit(int row, TreePath path)
     {
         MainController.get().editor.openFile((File)path.getLastPathComponent());
+    }
+
+    private JTree getTree()
+    {
+        if (tree == null)
+        {
+            tree = new JTree();
+            tree.addMouseListener(new MouseAdapter()
+            {
+                public void mousePressed(MouseEvent e)
+                {
+                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                    if (selRow != -1)
+                    {
+                        if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON2)
+                        {
+                            showMenu(selRow, selPath);
+                        }
+                        else if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
+                        {
+                            edit(selRow, selPath);
+                        }
+                    }
+                }
+            });
+        }
+        return tree;
     }
 
     private void showMenu(int row, TreePath path)

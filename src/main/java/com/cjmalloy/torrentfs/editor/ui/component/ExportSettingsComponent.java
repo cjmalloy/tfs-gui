@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -124,7 +125,7 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
             trackers = new JPanel();
             trackers.setLayout(new BoxLayout(trackers, BoxLayout.PAGE_AXIS));
             trackers.add(new Label(R.getString("torrentTrackersLabel")));
-            trackers.add(getTrackersInput());
+            trackers.add(new JScrollPane(getTrackersInput()));
         }
         return trackers;
     }

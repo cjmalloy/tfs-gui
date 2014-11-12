@@ -1,7 +1,6 @@
 package com.cjmalloy.torrentfs.editor.ui.component;
 
-import java.awt.Component;
-
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -15,7 +14,8 @@ import com.google.common.eventbus.Subscribe;
 public class TextEditor implements FileEditorFacet
 {
 
-    private JTextArea layout;
+    private JScrollPane layout;
+    private JTextArea textArea;
     private EditorFileController controller;
 
     protected TextEditor(EditorFileController controller)
@@ -31,13 +31,30 @@ public class TextEditor implements FileEditorFacet
     }
 
     @Override
-    public Component getLayout()
+    public JScrollPane getLayout()
     {
         if (layout == null)
         {
+            layout = new JScrollPane(getTextArea());
+        }
+        return layout;
+    }
+
+    @Subscribe
+    public void update(EditorFileModel model)
+    {
+        if (controller.model != model) return;
+
+
+    }
+
+    private JTextArea getTextArea()
+    {
+        if (textArea == null)
+        {
             // TODO: switch to jsyntaxpane for syntax highlighting
-            layout = new JTextArea();
-            layout.getDocument().addDocumentListener(new DocumentListener()
+            textArea = new JTextArea();
+            textArea.getDocument().addDocumentListener(new DocumentListener()
             {
                 @Override
                 public void changedUpdate(DocumentEvent e)
@@ -58,15 +75,7 @@ public class TextEditor implements FileEditorFacet
                 }
             });
         }
-        return layout;
-    }
-
-    @Subscribe
-    public void update(EditorFileModel model)
-    {
-        if (controller.model != model) return;
-
-
+        return textArea;
     }
 
 }
