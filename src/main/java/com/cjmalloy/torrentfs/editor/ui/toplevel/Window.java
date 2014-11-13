@@ -1,8 +1,6 @@
 package com.cjmalloy.torrentfs.editor.ui.toplevel;
 
 import java.awt.Dimension;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ResourceBundle;
@@ -67,14 +65,6 @@ public class Window implements TopLevel
                 MainController.get().requestExit();
             }
         });
-        frame.addComponentListener(new ComponentAdapter()
-        {
-            @Override
-            public void componentResized(ComponentEvent e)
-            {
-                onResize();
-            }
-        });
 
         Controller.EVENT_BUS.register(this);
 
@@ -99,13 +89,6 @@ public class Window implements TopLevel
         System.exit(0);
     }
 
-    public void onResize()
-    {
-        if (view == null) return;
-
-        view.onResize(frame.getSize());
-    }
-
     @Subscribe
     public void onShutdownNow(ShutdownNowEvent event)
     {
@@ -127,7 +110,6 @@ public class Window implements TopLevel
         if (this.view != null)
         {
             frame.add(view.getWidget());
-            view.onResize(frame.getSize());
             frame.revalidate();
         }
     }

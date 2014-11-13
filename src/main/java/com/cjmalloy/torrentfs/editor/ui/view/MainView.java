@@ -1,11 +1,10 @@
 package com.cjmalloy.torrentfs.editor.ui.view;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
@@ -24,7 +23,6 @@ public class MainView implements View
 {
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
-    private static final int TOOLBAR_HEIGHT = 50;
     private static final int DEFAULT_SPLIT = 300;
     private static final int MIN_SPLIT_LEFT = 100;
     private static final int MIN_SPLIT_RIGHT = 100;
@@ -49,29 +47,10 @@ public class MainView implements View
         if (widget == null)
         {
             widget = new JPanel();
-            widget.setLayout(null);
-            widget.add(getSplitPane());
+            widget.setLayout(new BorderLayout());
+            widget.add(getSplitPane(), BorderLayout.CENTER);
         }
         return widget;
-    }
-
-    @Override
-    public void onResize(Dimension dim)
-    {
-        getWidget().setSize(dim);
-        getSplitPane().setSize(dim);
-        onSliderMove(dim);
-    }
-
-    private void onSliderMove(Dimension dim)
-    {
-        if (dim.width == 0) return;
-        int l = getSplitPane().getDividerLocation();
-        int r = dim.width - l - getSplitPane().getDividerSize();
-        getLeftArea().setSize(l, dim.height);
-        getToolbar().setSize(l, TOOLBAR_HEIGHT);
-        getFilesystemView().onResize(new Dimension(l, dim.height - TOOLBAR_HEIGHT));
-        getEditorView().onResize(new Dimension(r, dim.height));
     }
 
     @Subscribe
@@ -122,12 +101,10 @@ public class MainView implements View
         if (leftArea == null)
         {
             leftArea = new JPanel();
-            leftArea.setLayout(null);
+            leftArea.setLayout(new BorderLayout());
             leftArea.setMinimumSize(new Dimension(MIN_SPLIT_LEFT, 0));
-            leftArea.add(getToolbar());
-            leftArea.add(getFilesystemView().getWidget());
-            getToolbar().setLocation(0, 0);
-            getFilesystemView().getWidget().setLocation(0, TOOLBAR_HEIGHT);
+            leftArea.add(getToolbar(), BorderLayout.NORTH);
+            leftArea.add(getFilesystemView().getWidget(), BorderLayout.CENTER);
         }
         return leftArea;
     }
@@ -156,14 +133,6 @@ public class MainView implements View
         {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getLeftArea(), getEditorView().getWidget());
             splitPane.setDividerLocation(DEFAULT_SPLIT);
-            splitPane.addPropertyChangeListener(new PropertyChangeListener()
-            {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt)
-                {
-                    onSliderMove(getWidget().getSize());
-                }
-            });
         }
         return splitPane;
     }
@@ -173,7 +142,6 @@ public class MainView implements View
         if (toolbar == null)
         {
             toolbar = new JToolBar();
-            toolbar.setFloatable(false);
             toolbar.add(getOpenButton());
             toolbar.add(getExportButton());
         }

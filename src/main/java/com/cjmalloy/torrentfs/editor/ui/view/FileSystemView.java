@@ -1,6 +1,5 @@
 package com.cjmalloy.torrentfs.editor.ui.view;
 
-import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -37,12 +36,6 @@ public class FileSystemView implements View
             widget = new JScrollPane(getTree());
         }
         return widget;
-    }
-
-    @Override
-    public void onResize(Dimension dim)
-    {
-        getWidget().setSize(dim.width, dim.height);
     }
 
     @Subscribe

@@ -1,6 +1,5 @@
 package com.cjmalloy.torrentfs.editor.ui.view;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -37,12 +36,6 @@ public class EditorView implements View
             tabs = new JTabbedPane();
         }
         return tabs;
-    }
-
-    @Override
-    public void onResize(Dimension dim)
-    {
-        getWidget().setSize(dim.width, dim.height);
     }
 
     @Subscribe
