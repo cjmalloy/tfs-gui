@@ -1,5 +1,6 @@
 package com.cjmalloy.torrentfs.editor.ui.component;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 import javax.swing.JScrollPane;
@@ -20,10 +21,10 @@ public class TextEditor implements FileEditorFacet
     private JTextArea textArea;
     private EditorFileController controller;
 
-    protected TextEditor(EditorFileController controller)
+    protected TextEditor(EditorFileController controller) throws IOException
     {
         this.controller = controller;
-        update(controller.model);
+        controller.refresh();
         Controller.EVENT_BUS.register(this);
     }
 

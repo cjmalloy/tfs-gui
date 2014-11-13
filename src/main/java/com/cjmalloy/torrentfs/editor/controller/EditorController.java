@@ -1,7 +1,6 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -116,16 +115,8 @@ public class EditorController extends Controller<EditorModel>
         if (editorFile == null)
         {
             editorFile = new EditorFileModel(file);
-            try
-            {
-                fileControllers.add(new EditorFileController(editorFile));
-                model.openFiles.add(editorFile);
-            }
-            catch (IOException e)
-            {
-                EVENT_BUS.post(new ErrorMessage(e.getMessage()));
-                return;
-            }
+            model.openFiles.add(editorFile);
+            fileControllers.add(new EditorFileController(editorFile));
         }
         switchTo(editorFile);
     }

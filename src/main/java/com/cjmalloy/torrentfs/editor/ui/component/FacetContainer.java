@@ -1,5 +1,6 @@
 package com.cjmalloy.torrentfs.editor.ui.component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -9,6 +10,7 @@ import javax.swing.JTabbedPane;
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
+import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel.EditFacet;
 import com.cjmalloy.torrentfs.editor.ui.HasWidget;
@@ -32,9 +34,18 @@ public class FacetContainer implements HasWidget
 
         for (EditFacet facet : model.supportedFacets)
         {
-            FileEditorFacet e = FileEditorFactory.create(facet, controller);
-            facetEditors.add(e);
-            getWidget().addTab(getTitle(facet), e.getWidget());
+            FileEditorFacet c;
+            try
+            {
+                c = FileEditorFactory.create(facet, controller);
+                facetEditors.add(c);
+                getWidget().addTab(getTitle(facet), c.getWidget());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                Controller.EVENT_BUS.post(new ErrorMessage(e.getMessage()));
+            }
         }
         Controller.EVENT_BUS.register(this);
     }

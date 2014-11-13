@@ -15,9 +15,13 @@ import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 public class EditorFileController extends Controller<EditorFileModel>
 {
 
-    public EditorFileController(EditorFileModel model) throws IOException
+    public EditorFileController(EditorFileModel model)
     {
         this.model = model;
+    }
+
+    public void refresh() throws IOException
+    {
         load();
         model.refresh = true;
     }
