@@ -24,6 +24,7 @@ public class EditorFileController extends Controller<EditorFileModel>
     {
         load();
         model.refresh = true;
+        update();
     }
 
     /**

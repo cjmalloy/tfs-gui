@@ -24,8 +24,8 @@ public class TextEditor implements FacetEditor
     protected TextEditor(EditorFileController controller) throws IOException
     {
         this.controller = controller;
-        controller.refresh();
         Controller.EVENT_BUS.register(this);
+        controller.refresh();
     }
 
     @Override
