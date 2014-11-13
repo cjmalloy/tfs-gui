@@ -2,8 +2,8 @@ package com.cjmalloy.torrentfs.editor.ui.view;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -62,9 +62,9 @@ public class FileSystemView implements View
         }
     }
 
-    private void edit(int row, TreePath path)
+    private void edit(int row, Path path)
     {
-        MainController.get().editor.openFile((File)path.getLastPathComponent());
+        MainController.get().editor.openFile(path.toFile());
     }
 
     private JTree getTree()
@@ -82,11 +82,11 @@ public class FileSystemView implements View
                     {
                         if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON2)
                         {
-                            showMenu(selRow, selPath);
+                            showMenu(selRow, getPath(selPath));
                         }
                         else if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
                         {
-                            edit(selRow, selPath);
+                            edit(selRow, getPath(selPath));
                         }
                     }
                 }
@@ -95,8 +95,19 @@ public class FileSystemView implements View
         return tree;
     }
 
-    private void showMenu(int row, TreePath path)
+    private void showMenu(int row, Path path)
     {
+    }
+
+    private static Path getPath(TreePath treePath)
+    {
+        Object[] pathElements = treePath.getPath();
+        String[] ret = new String[pathElements.length-1];
+        for (int i=0; i<ret.length; i++)
+        {
+            ret[i] = pathElements[i+1].toString();
+        }
+        return Paths.get(pathElements[0].toString(), ret);
     }
 
 }

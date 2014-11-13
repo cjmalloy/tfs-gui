@@ -1,6 +1,7 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -8,6 +9,9 @@ import java.util.ResourceBundle;
 import com.cjmalloy.torrentfs.editor.core.Continuation;
 import com.cjmalloy.torrentfs.editor.event.ConfirmEvent;
 import com.cjmalloy.torrentfs.editor.event.ConfirmEvent.ConfirmCallback;
+import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
+import com.cjmalloy.torrentfs.editor.event.FlushEvent;
+import com.cjmalloy.torrentfs.editor.event.FlushEvent.FlushListener;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorModel;
 
@@ -112,8 +116,16 @@ public class EditorController extends Controller<EditorModel>
         if (editorFile == null)
         {
             editorFile = new EditorFileModel(file);
-            model.openFiles.add(editorFile);
-            fileControllers.add(new EditorFileController(editorFile));
+            try
+            {
+                fileControllers.add(new EditorFileController(editorFile));
+                model.openFiles.add(editorFile);
+            }
+            catch (IOException e)
+            {
+                EVENT_BUS.post(new ErrorMessage(e.getMessage()));
+                return;
+            }
         }
         switchTo(editorFile);
     }
@@ -160,8 +172,31 @@ public class EditorController extends Controller<EditorModel>
                 @Override
                 public void onYes()
                 {
+                    final int dirtyFiles = countDirty();
+                    EVENT_BUS.register(new FlushListener()
+                    {
+                        private int count = 0;
+
+                        @Override
+                        public void onFlush(FlushEvent event)
+                        {
+                            if (event.file.dirty)
+                            {
+                                EVENT_BUS.post(new ErrorMessage(R.getString("errorWritingFile") + event.file.path));
+                                EVENT_BUS.unregister(this);
+                            }
+                            else
+                            {
+                                count++;
+                                if (count >= dirtyFiles)
+                                {
+                                    ct.next();
+                                    EVENT_BUS.unregister(this);
+                                }
+                            }
+                        }
+                    });
                     saveAll();
-                    ct.next();
                 }
             }));
         }
@@ -204,8 +239,25 @@ public class EditorController extends Controller<EditorModel>
                 @Override
                 public void onYes()
                 {
+                    EVENT_BUS.register(new FlushListener()
+                    {
+                        @Override
+                        public void onFlush(FlushEvent event)
+                        {
+                            if (event.file != fileController.model) return;
+
+                            if (event.file.dirty)
+                            {
+                                EVENT_BUS.post(new ErrorMessage(R.getString("errorWritingFile") + event.file.path));
+                            }
+                            else
+                            {
+                                ct.next();
+                            }
+                            EVENT_BUS.unregister(this);
+                        }
+                    });
                     fileController.save();
-                    ct.next();
                 }
             }));
         }
@@ -215,5 +267,15 @@ public class EditorController extends Controller<EditorModel>
     {
         model.activeFile = model.openFiles.indexOf(file);
         update();
+    }
+
+    private int countDirty()
+    {
+        int count = 0;
+        for (EditorFileModel m : model.openFiles)
+        {
+            if (m.dirty) count++;
+        }
+        return count;
     }
 }

@@ -1,5 +1,7 @@
 package com.cjmalloy.torrentfs.editor.ui.component;
 
+import java.nio.charset.Charset;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
@@ -21,6 +23,7 @@ public class TextEditor implements FileEditorFacet
     protected TextEditor(EditorFileController controller)
     {
         this.controller = controller;
+        update(controller.model);
         Controller.EVENT_BUS.register(this);
     }
 
@@ -45,7 +48,16 @@ public class TextEditor implements FileEditorFacet
     {
         if (controller.model != model) return;
 
-
+        if (model.flush)
+        {
+            controller.flush(getTextArea().getText());
+        }
+        if (model.refresh)
+        {
+            model.refresh = false;
+            getTextArea().setText(new String(model.contents, Charset.forName("UTF-8")));
+            getTextArea().setCaretPosition(0);
+        }
     }
 
     private JTextArea getTextArea()

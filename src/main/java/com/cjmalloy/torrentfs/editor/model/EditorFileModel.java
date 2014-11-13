@@ -8,11 +8,13 @@ import java.util.List;
 public class EditorFileModel
 {
     public File path;
+    public byte[] contents;
     public boolean isTfs;
     public int editMode = 0;
     public List<EditFacet> supportedFacets = new ArrayList<>();
     public boolean dirty = false;
     public boolean flush = false;
+    public boolean refresh = false;
 
     public EditorFileModel(File path)
     {

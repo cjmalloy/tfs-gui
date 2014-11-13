@@ -41,6 +41,8 @@ public class EditorView implements View
     @Subscribe
     public void update(EditorModel model)
     {
+        try {
+
         for (EditorFileModel f : model.openFiles)
         {
             if (!files.contains(f))
@@ -77,6 +79,11 @@ public class EditorView implements View
         {
             currentEditor = model.activeFile;
             getWidget().setSelectedIndex(currentEditor);
+        }
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
         }
     }
 }

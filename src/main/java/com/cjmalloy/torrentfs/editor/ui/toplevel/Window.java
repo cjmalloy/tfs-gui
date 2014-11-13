@@ -10,12 +10,12 @@ import javax.swing.JFrame;
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.event.ShutdownNowEvent;
+import com.cjmalloy.torrentfs.editor.ui.dialog.ConfirmDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.ErrorDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.ExportDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.MessageDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.OpenFolderDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.ProgressDialog;
-import com.cjmalloy.torrentfs.editor.ui.dialog.ConfirmDialog;
 import com.cjmalloy.torrentfs.editor.ui.view.View;
 import com.google.common.eventbus.Subscribe;
 
@@ -41,6 +41,7 @@ public class Window implements TopLevel
 
         t = new Thread()
         {
+            @Override
             public void run()
             {
                 synchronized (lock)
