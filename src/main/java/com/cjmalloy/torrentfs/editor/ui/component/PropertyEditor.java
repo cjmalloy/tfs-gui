@@ -10,7 +10,7 @@ import com.cjmalloy.torrentfs.editor.model.EditorModel;
 import com.google.common.eventbus.Subscribe;
 
 
-public class PropertyEditor implements FileEditorFacet
+public class PropertyEditor implements FacetEditor
 {
     private JPanel widget;
 

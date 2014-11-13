@@ -12,9 +12,9 @@ import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
-import com.cjmalloy.torrentfs.editor.model.EditorFileModel.EditFacet;
+import com.cjmalloy.torrentfs.editor.model.EditorFileModel.Facet;
 import com.cjmalloy.torrentfs.editor.ui.HasWidget;
-import com.cjmalloy.torrentfs.editor.ui.component.FileEditorFacet.FileEditorFactory;
+import com.cjmalloy.torrentfs.editor.ui.component.FacetEditor.FileEditorFactory;
 import com.google.common.eventbus.Subscribe;
 
 
@@ -23,7 +23,7 @@ public class FacetContainer implements HasWidget
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
     private JTabbedPane tabs;
-    private List<FileEditorFacet> facetEditors = new ArrayList<>();
+    private List<FacetEditor> facetEditors = new ArrayList<>();
 
     private EditorFileController controller;
     private int currentFacet;
@@ -32,9 +32,9 @@ public class FacetContainer implements HasWidget
     {
         this.controller = MainController.get().editor.getController(model);
 
-        for (EditFacet facet : model.supportedFacets)
+        for (Facet facet : model.supportedFacets)
         {
-            FileEditorFacet c;
+            FacetEditor c;
             try
             {
                 c = FileEditorFactory.create(facet, controller);
@@ -53,7 +53,7 @@ public class FacetContainer implements HasWidget
     public void close()
     {
         Controller.EVENT_BUS.unregister(this);
-        for (FileEditorFacet e : facetEditors)
+        for (FacetEditor e : facetEditors)
         {
             e.close();
         }
@@ -84,7 +84,7 @@ public class FacetContainer implements HasWidget
         }
     }
 
-    private static String getTitle(EditFacet facet)
+    private static String getTitle(Facet facet)
     {
         switch (facet)
         {

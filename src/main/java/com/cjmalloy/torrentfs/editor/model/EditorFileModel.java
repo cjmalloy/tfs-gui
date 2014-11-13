@@ -11,7 +11,7 @@ public class EditorFileModel
     public byte[] contents;
     public boolean isTfs;
     public int editMode = 0;
-    public List<EditFacet> supportedFacets = new ArrayList<>();
+    public List<Facet> supportedFacets = new ArrayList<>();
     public boolean dirty = false;
     public boolean flush = false;
     public boolean refresh = false;
@@ -20,8 +20,8 @@ public class EditorFileModel
     {
         this.path = path;
         isTfs = path.getName().equalsIgnoreCase(".tfs");
-        if (isTfs) supportedFacets.add(EditFacet.RAW);
-        supportedFacets.add(EditFacet.PROPERTIES);
+        if (isTfs) supportedFacets.add(Facet.RAW);
+        supportedFacets.add(Facet.PROPERTIES);
     }
 
     public String getTitle()
@@ -33,7 +33,7 @@ public class EditorFileModel
         return path.getName();
     }
 
-    public enum EditFacet
+    public enum Facet
     {
         RAW,
         PROPERTIES;

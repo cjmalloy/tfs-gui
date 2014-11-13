@@ -14,7 +14,7 @@ import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.google.common.eventbus.Subscribe;
 
 
-public class TextEditor implements FileEditorFacet
+public class TextEditor implements FacetEditor
 {
 
     private JScrollPane widget;
