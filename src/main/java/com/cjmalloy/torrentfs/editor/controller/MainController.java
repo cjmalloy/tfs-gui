@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.SwingWorker;
 
+import com.cjmalloy.torrentfs.editor.core.Continuation;
 import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
 import com.cjmalloy.torrentfs.editor.event.ExportEvent;
 import com.cjmalloy.torrentfs.editor.event.ExportEvent.ExportCallback;
@@ -15,8 +16,6 @@ import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.event.ProgressEnd;
 import com.cjmalloy.torrentfs.editor.event.ProgressStart;
 import com.cjmalloy.torrentfs.editor.event.ProgressUpdate;
-import com.cjmalloy.torrentfs.editor.event.SaveCancelContinueEvent;
-import com.cjmalloy.torrentfs.editor.event.SaveCancelContinueEvent.SaveCancelContinueCallback;
 import com.cjmalloy.torrentfs.editor.event.ShutdownNowEvent;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
@@ -44,74 +43,53 @@ public class MainController extends Controller<MainDocument>
 
     public void export()
     {
-        if (!editor.hasUnsavedChanges())
+        editor.saveCancelContinue(new Continuation()
         {
-            EVENT_BUS.post(new ExportEvent(new ExportCallback()
+            @Override
+            public void next()
             {
-                @Override
-                public void withSettings(ExportSettings settings)
+                EVENT_BUS.post(new ExportEvent(new ExportCallback()
                 {
-                    export(settings);
-                }
-            }));
-        }
-        else
-        {
-            EVENT_BUS.post(new SaveCancelContinueEvent(new SaveCancelContinueAdapter()
-            {
-                @Override
-                public void onContinue()
-                {
-                    export();
-                }
-            }));
-        }
+                    @Override
+                    public void withSettings(ExportSettings settings)
+                    {
+                        export(settings);
+                    }
+                }));
+            }
+        });
     }
 
     public void open()
     {
-        if (!editor.hasUnsavedChanges())
+        editor.closeAll(new Continuation()
         {
-            EVENT_BUS.post(new OpenFolderEvent(new OpenFolderCallback()
+            @Override
+            public void next()
             {
-                @Override
-                public void withFolder(Path folder)
+                EVENT_BUS.post(new OpenFolderEvent(new OpenFolderCallback()
                 {
-                    open(folder);
-                }
-            }));
-        }
-        else
-        {
-            EVENT_BUS.post(new SaveCancelContinueEvent(new SaveCancelContinueAdapter()
-            {
-                @Override
-                public void onContinue()
-                {
-                    open();
-                }
-            }));
-        }
+                    @Override
+                    public void withFolder(Path folder)
+                    {
+                        open(folder);
+                    }
+                }));
+            }
+        });
     }
 
     public void requestExit()
     {
-        if (!editor.hasUnsavedChanges())
+        editor.closeAll(new Continuation()
         {
-            EVENT_BUS.post(new ShutdownNowEvent());
-            update();
-        }
-        else
-        {
-            EVENT_BUS.post(new SaveCancelContinueEvent(new SaveCancelContinueAdapter()
+            @Override
+            public void next()
             {
-                @Override
-                public void onContinue()
-                {
-                    requestExit();
-                }
-            }));
-        }
+                EVENT_BUS.post(new ShutdownNowEvent());
+                update();
+            }
+        });
     }
 
     @Override
@@ -176,21 +154,5 @@ public class MainController extends Controller<MainDocument>
             instance = new MainController();
         }
         return instance;
-    }
-
-    private abstract class SaveCancelContinueAdapter implements SaveCancelContinueCallback
-    {
-        @Override
-        public void onCancel()
-        {
-            //do nothing
-        }
-
-        @Override
-        public void onSave()
-        {
-            editor.saveAll();
-            onContinue();
-        }
     }
 }
