@@ -15,6 +15,7 @@ import com.cjmalloy.torrentfs.editor.ui.dialog.ExportDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.MessageDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.OpenFolderDialog;
 import com.cjmalloy.torrentfs.editor.ui.dialog.ProgressDialog;
+import com.cjmalloy.torrentfs.editor.ui.dialog.ConfirmDialog;
 import com.cjmalloy.torrentfs.editor.ui.view.View;
 import com.google.common.eventbus.Subscribe;
 
@@ -72,6 +73,7 @@ public class Window implements TopLevel
         new ExportDialog(frame);
         new MessageDialog(frame);
         new ErrorDialog(frame);
+        new ConfirmDialog(frame);
         new ProgressDialog(frame);
     }
 

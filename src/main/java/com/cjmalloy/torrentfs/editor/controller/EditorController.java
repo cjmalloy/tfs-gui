@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.cjmalloy.torrentfs.editor.core.Continuation;
-import com.cjmalloy.torrentfs.editor.event.YesNoCancelEvent;
-import com.cjmalloy.torrentfs.editor.event.YesNoCancelEvent.YesNoCancelCallback;
+import com.cjmalloy.torrentfs.editor.event.ConfirmEvent;
+import com.cjmalloy.torrentfs.editor.event.ConfirmEvent.ConfirmCallback;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorModel;
 
@@ -143,7 +143,7 @@ public class EditorController extends Controller<EditorModel>
         }
         else
         {
-            EVENT_BUS.post(new YesNoCancelEvent(R.getString("saveAllFiles"), new YesNoCancelCallback()
+            EVENT_BUS.post(new ConfirmEvent(R.getString("saveAllFiles"), new ConfirmCallback()
             {
                 @Override
                 public void onCancel()
@@ -187,7 +187,7 @@ public class EditorController extends Controller<EditorModel>
         }
         else
         {
-            EVENT_BUS.post(new YesNoCancelEvent(R.getString("saveFile"), new YesNoCancelCallback()
+            EVENT_BUS.post(new ConfirmEvent(R.getString("saveFile"), new ConfirmCallback()
             {
                 @Override
                 public void onCancel()
