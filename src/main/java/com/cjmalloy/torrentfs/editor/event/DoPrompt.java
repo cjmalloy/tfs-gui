@@ -1,20 +1,19 @@
 package com.cjmalloy.torrentfs.editor.event;
 
 
-public class ConfirmEvent
+public class DoPrompt
 {
     public String msg;
-    public ConfirmCallback callback;
+    public PromptCallback callback;
 
-    public ConfirmEvent(String msg, ConfirmCallback callback)
+    public DoPrompt(String msg, PromptCallback callback)
     {
         this.msg = msg;
         this.callback = callback;
     }
 
-    public interface ConfirmCallback
+    public interface PromptCallback
     {
-        void onCancel();
         void onNo();
         void onYes();
     }

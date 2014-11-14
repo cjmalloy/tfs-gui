@@ -3,11 +3,11 @@ package com.cjmalloy.torrentfs.editor.event;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 
 
-public class ExportEvent
+public class DoExport
 {
     public ExportCallback callback;
 
-    public ExportEvent(ExportCallback callback)
+    public DoExport(ExportCallback callback)
     {
         this.callback = callback;
     }

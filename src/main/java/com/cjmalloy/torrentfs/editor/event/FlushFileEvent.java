@@ -4,11 +4,11 @@ import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.google.common.eventbus.Subscribe;
 
 
-public class FlushEvent
+public class FlushFileEvent
 {
     public EditorFileModel file;
 
-    public FlushEvent(EditorFileModel file)
+    public FlushFileEvent(EditorFileModel file)
     {
         this.file = file;
     }
@@ -16,6 +16,6 @@ public class FlushEvent
     public interface FlushListener
     {
         @Subscribe
-        void onFlush(FlushEvent event);
+        void onFlush(FlushFileEvent event);
     }
 }

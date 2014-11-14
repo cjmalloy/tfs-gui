@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.cjmalloy.torrentfs.editor.event.ExportEvent;
+import com.cjmalloy.torrentfs.editor.event.DoExport;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.ui.component.ExportSettingsComponent;
 import com.google.common.eventbus.Subscribe;
@@ -25,7 +25,7 @@ public class ExportDialog extends Dialog
     }
 
     @Subscribe
-    public void export(final ExportEvent event)
+    public void export(final DoExport event)
     {
         SwingUtilities.invokeLater(new Runnable()
         {

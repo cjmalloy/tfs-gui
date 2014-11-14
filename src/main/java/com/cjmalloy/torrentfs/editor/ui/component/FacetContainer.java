@@ -10,7 +10,7 @@ import javax.swing.JTabbedPane;
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
-import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
+import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel.Facet;
 import com.cjmalloy.torrentfs.editor.ui.HasWidget;
@@ -44,7 +44,7 @@ public class FacetContainer implements HasWidget
             catch (IOException e)
             {
                 e.printStackTrace();
-                Controller.EVENT_BUS.post(new ErrorMessage(e.getMessage()));
+                Controller.EVENT_BUS.post(new DoErrorMessage(e.getMessage()));
             }
         }
         Controller.EVENT_BUS.register(this);

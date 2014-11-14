@@ -12,9 +12,8 @@ public class EditorFileModel
     public boolean isTfs;
     public int editMode = 0;
     public List<Facet> supportedFacets = new ArrayList<>();
-    public boolean dirty = false;
-    public boolean flush = false;
-    public boolean refresh = false;
+    public boolean editorModified = false;
+    public boolean fileSystemModified = false;
 
     public EditorFileModel(File path)
     {

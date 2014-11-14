@@ -3,11 +3,11 @@ package com.cjmalloy.torrentfs.editor.event;
 import java.nio.file.Path;
 
 
-public class OpenFolderEvent
+public class DoOpenFolder
 {
     public OpenFolderCallback callback;
 
-    public OpenFolderEvent(OpenFolderCallback callback)
+    public DoOpenFolder(OpenFolderCallback callback)
     {
         this.callback = callback;
     }

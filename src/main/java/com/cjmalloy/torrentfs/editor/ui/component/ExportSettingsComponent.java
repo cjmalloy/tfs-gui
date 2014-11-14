@@ -18,8 +18,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
-import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent;
-import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent.OpenFolderCallback;
+import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
+import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.ui.SettingsComponent;
 
@@ -94,7 +94,7 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    Controller.EVENT_BUS.post(new OpenFolderEvent(new OpenFolderCallback()
+                    Controller.EVENT_BUS.post(new DoOpenFolder(new OpenFolderCallback()
                     {
                         @Override
                         public void withFolder(Path folder)

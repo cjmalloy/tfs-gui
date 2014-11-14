@@ -4,9 +4,9 @@ import java.awt.Frame;
 
 import javax.swing.ProgressMonitor;
 
-import com.cjmalloy.torrentfs.editor.event.ProgressEnd;
-import com.cjmalloy.torrentfs.editor.event.ProgressStart;
-import com.cjmalloy.torrentfs.editor.event.ProgressUpdate;
+import com.cjmalloy.torrentfs.editor.event.ProgressEndEvent;
+import com.cjmalloy.torrentfs.editor.event.ProgressStartEvent;
+import com.cjmalloy.torrentfs.editor.event.ProgressUpdateEvent;
 import com.google.common.eventbus.Subscribe;
 
 
@@ -20,7 +20,7 @@ public class ProgressDialog extends Dialog
     }
 
     @Subscribe
-    public void onStart(ProgressStart event)
+    public void onStart(ProgressStartEvent event)
     {
         dialog = new ProgressMonitor(parent, "Loading...", "note", 0, 100);
         dialog.setMillisToDecideToPopup(0);
@@ -28,13 +28,13 @@ public class ProgressDialog extends Dialog
     }
 
     @Subscribe
-    public void onUpdate(ProgressUpdate event)
+    public void onUpdate(ProgressUpdateEvent event)
     {
         dialog.setProgress((int) Math.ceil(event.p * 100));
     }
 
     @Subscribe
-    public void onEnd(ProgressEnd event)
+    public void onEnd(ProgressEndEvent event)
     {
         dialog.close();
         dialog = null;

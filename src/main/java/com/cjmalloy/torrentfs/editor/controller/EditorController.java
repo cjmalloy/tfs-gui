@@ -1,18 +1,23 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import com.cjmalloy.torrentfs.editor.core.Continuation;
-import com.cjmalloy.torrentfs.editor.event.ConfirmEvent;
-import com.cjmalloy.torrentfs.editor.event.ConfirmEvent.ConfirmCallback;
-import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
-import com.cjmalloy.torrentfs.editor.event.FlushEvent;
-import com.cjmalloy.torrentfs.editor.event.FlushEvent.FlushListener;
+import com.cjmalloy.torrentfs.editor.event.DoConfirm;
+import com.cjmalloy.torrentfs.editor.event.DoConfirm.ConfirmCallback;
+import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
+import com.cjmalloy.torrentfs.editor.event.DoPrompt;
+import com.cjmalloy.torrentfs.editor.event.DoPrompt.PromptCallback;
+import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
+import com.cjmalloy.torrentfs.editor.event.FlushFileEvent;
+import com.cjmalloy.torrentfs.editor.event.FlushFileEvent.FlushListener;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorModel;
+import com.google.common.eventbus.Subscribe;
 
 
 public class EditorController extends Controller<EditorModel>
@@ -70,6 +75,32 @@ public class EditorController extends Controller<EditorModel>
     }
 
 
+    @Subscribe
+    public void fileModified(FileModificationEvent event)
+    {
+        for (EditorFileController c : fileControllers)
+        {
+            if (c.model.path.toPath().equals(event.file))
+            {
+                try
+                {
+                    c.load();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        reloadActiveModified(Continuation.NOP);
+    }
+
+    public EditorFileController getActiveFileController()
+    {
+        if (model.activeFile == -1) return null;
+        return getController(model.openFiles.get(model.activeFile));
+    }
+
     public EditorFileController getController(EditorFileModel f)
     {
         for (EditorFileController c : fileControllers)
@@ -121,6 +152,30 @@ public class EditorController extends Controller<EditorModel>
         switchTo(editorFile);
     }
 
+    public void reloadActiveModified(final Continuation ct)
+    {
+        final EditorFileController c = getActiveFileController();
+        if (c != null && c.model.fileSystemModified)
+        {
+            EVENT_BUS.post(new DoPrompt(R.getString("promptReloadModifiedFile"), new PromptCallback()
+            {
+                @Override
+                public void onNo()
+                {
+                    c.ignoreModified();
+                    ct.next();
+                }
+
+                @Override
+                public void onYes()
+                {
+                    c.refresh();
+                    ct.next();
+                }
+            }));
+        }
+    }
+
     public void saveAll()
     {
         for (EditorFileController c : fileControllers)
@@ -146,7 +201,7 @@ public class EditorController extends Controller<EditorModel>
         }
         else
         {
-            EVENT_BUS.post(new ConfirmEvent(R.getString("saveAllFiles"), new ConfirmCallback()
+            EVENT_BUS.post(new DoConfirm(R.getString("saveAllFiles"), new ConfirmCallback()
             {
                 @Override
                 public void onCancel()
@@ -169,11 +224,11 @@ public class EditorController extends Controller<EditorModel>
                         private int count = 0;
 
                         @Override
-                        public void onFlush(FlushEvent event)
+                        public void onFlush(FlushFileEvent event)
                         {
-                            if (event.file.dirty)
+                            if (event.file.editorModified)
                             {
-                                EVENT_BUS.post(new ErrorMessage(R.getString("errorWritingFile") + event.file.path));
+                                EVENT_BUS.post(new DoErrorMessage(R.getString("errorWritingFile") + event.file.path));
                                 EVENT_BUS.unregister(this);
                             }
                             else
@@ -213,7 +268,7 @@ public class EditorController extends Controller<EditorModel>
         }
         else
         {
-            EVENT_BUS.post(new ConfirmEvent(R.getString("saveFile"), new ConfirmCallback()
+            EVENT_BUS.post(new DoConfirm(R.getString("saveFile"), new ConfirmCallback()
             {
                 @Override
                 public void onCancel()
@@ -233,13 +288,13 @@ public class EditorController extends Controller<EditorModel>
                     EVENT_BUS.register(new FlushListener()
                     {
                         @Override
-                        public void onFlush(FlushEvent event)
+                        public void onFlush(FlushFileEvent event)
                         {
                             if (event.file != fileController.model) return;
 
-                            if (event.file.dirty)
+                            if (event.file.editorModified)
                             {
-                                EVENT_BUS.post(new ErrorMessage(R.getString("errorWritingFile") + event.file.path));
+                                EVENT_BUS.post(new DoErrorMessage(R.getString("errorWritingFile") + event.file.path));
                             }
                             else
                             {
@@ -258,6 +313,7 @@ public class EditorController extends Controller<EditorModel>
     {
         model.activeFile = model.openFiles.indexOf(file);
         update();
+        reloadActiveModified(Continuation.NOP);
     }
 
     private int countDirty()
@@ -265,7 +321,7 @@ public class EditorController extends Controller<EditorModel>
         int count = 0;
         for (EditorFileModel m : model.openFiles)
         {
-            if (m.dirty) count++;
+            if (m.editorModified) count++;
         }
         return count;
     }

@@ -1,7 +1,7 @@
 package com.cjmalloy.torrentfs.editor.event;
 
 
-public class ProgressStart
+public class ProgressEndEvent
 {
 
 }

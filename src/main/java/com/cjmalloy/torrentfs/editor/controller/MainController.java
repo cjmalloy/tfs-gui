@@ -7,16 +7,16 @@ import java.util.ResourceBundle;
 import javax.swing.SwingWorker;
 
 import com.cjmalloy.torrentfs.editor.core.Continuation;
-import com.cjmalloy.torrentfs.editor.event.ErrorMessage;
-import com.cjmalloy.torrentfs.editor.event.ExportEvent;
-import com.cjmalloy.torrentfs.editor.event.ExportEvent.ExportCallback;
-import com.cjmalloy.torrentfs.editor.event.Message;
-import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent;
-import com.cjmalloy.torrentfs.editor.event.OpenFolderEvent.OpenFolderCallback;
-import com.cjmalloy.torrentfs.editor.event.ProgressEnd;
-import com.cjmalloy.torrentfs.editor.event.ProgressStart;
-import com.cjmalloy.torrentfs.editor.event.ProgressUpdate;
-import com.cjmalloy.torrentfs.editor.event.ShutdownNowEvent;
+import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
+import com.cjmalloy.torrentfs.editor.event.DoExport;
+import com.cjmalloy.torrentfs.editor.event.DoExport.ExportCallback;
+import com.cjmalloy.torrentfs.editor.event.DoMessage;
+import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
+import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
+import com.cjmalloy.torrentfs.editor.event.DoShutdownNow;
+import com.cjmalloy.torrentfs.editor.event.ProgressEndEvent;
+import com.cjmalloy.torrentfs.editor.event.ProgressStartEvent;
+import com.cjmalloy.torrentfs.editor.event.ProgressUpdateEvent;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
 import com.cjmalloy.torrentfs.util.TfsUtil;
@@ -48,7 +48,7 @@ public class MainController extends Controller<MainDocument>
             @Override
             public void next()
             {
-                EVENT_BUS.post(new ExportEvent(new ExportCallback()
+                EVENT_BUS.post(new DoExport(new ExportCallback()
                 {
                     @Override
                     public void withSettings(ExportSettings settings)
@@ -67,7 +67,7 @@ public class MainController extends Controller<MainDocument>
             @Override
             public void next()
             {
-                EVENT_BUS.post(new OpenFolderEvent(new OpenFolderCallback()
+                EVENT_BUS.post(new DoOpenFolder(new OpenFolderCallback()
                 {
                     @Override
                     public void withFolder(Path folder)
@@ -86,7 +86,7 @@ public class MainController extends Controller<MainDocument>
             @Override
             public void next()
             {
-                EVENT_BUS.post(new ShutdownNowEvent());
+                EVENT_BUS.post(new DoShutdownNow());
                 update();
             }
         });
@@ -104,11 +104,11 @@ public class MainController extends Controller<MainDocument>
     {
         if (!settings.valid())
         {
-            EVENT_BUS.post(new ErrorMessage(R.getString("errorInvalidExportSettings")));
+            EVENT_BUS.post(new DoErrorMessage(R.getString("errorInvalidExportSettings")));
             return;
         }
 
-        EVENT_BUS.post(new ProgressStart());
+        EVENT_BUS.post(new ProgressStartEvent());
         new SwingWorker<Void, Double>()
         {
             @Override
@@ -129,14 +129,14 @@ public class MainController extends Controller<MainDocument>
             @Override
             protected void process(List<Double> chunks)
             {
-                EVENT_BUS.post(new ProgressUpdate(chunks.get(0)));
+                EVENT_BUS.post(new ProgressUpdateEvent(chunks.get(0)));
             }
 
             @Override
             protected void done()
             {
-                EVENT_BUS.post(new ProgressEnd());
-                EVENT_BUS.post(new Message("done!"));
+                EVENT_BUS.post(new ProgressEndEvent());
+                EVENT_BUS.post(new DoMessage("done!"));
             }
         }.execute();
     }

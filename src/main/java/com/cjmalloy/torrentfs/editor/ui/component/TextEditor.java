@@ -10,6 +10,8 @@ import javax.swing.event.DocumentListener;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
+import com.cjmalloy.torrentfs.editor.event.DoFlushFile;
+import com.cjmalloy.torrentfs.editor.event.RefreshFileEvent;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.google.common.eventbus.Subscribe;
 
@@ -21,11 +23,13 @@ public class TextEditor implements FacetEditor
     private JTextArea textArea;
     private EditorFileController controller;
 
+    private boolean checkDirty = true;
+
     protected TextEditor(EditorFileController controller) throws IOException
     {
         this.controller = controller;
         Controller.EVENT_BUS.register(this);
-        controller.refresh();
+        controller.loadAndRefresh();
     }
 
     @Override
@@ -45,20 +49,30 @@ public class TextEditor implements FacetEditor
     }
 
     @Subscribe
+    public void onDoFlushFile(DoFlushFile event)
+    {
+        if (controller.model != event.file) return;
+
+        controller.flush(getTextArea().getText());
+    }
+
+    @Subscribe
+    public void onRefreshFile(RefreshFileEvent event)
+    {
+        if (controller.model != event.file) return;
+
+        checkDirty = false;
+        getTextArea().setText(new String(event.file.contents, Charset.forName("UTF-8")));
+        getTextArea().setCaretPosition(0);
+        checkDirty = true;
+    }
+
+    @Subscribe
     public void update(EditorFileModel model)
     {
         if (controller.model != model) return;
 
-        if (model.flush)
-        {
-            controller.flush(getTextArea().getText());
-        }
-        if (model.refresh)
-        {
-            model.refresh = false;
-            getTextArea().setText(new String(model.contents, Charset.forName("UTF-8")));
-            getTextArea().setCaretPosition(0);
-        }
+
     }
 
     private JTextArea getTextArea()
@@ -72,23 +86,29 @@ public class TextEditor implements FacetEditor
                 @Override
                 public void changedUpdate(DocumentEvent e)
                 {
-                    controller.setDirty();
+                    setDirty();
                 }
 
                 @Override
                 public void insertUpdate(DocumentEvent e)
                 {
-                    controller.setDirty();
+                    setDirty();
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent e)
                 {
-                    controller.setDirty();
+                    setDirty();
                 }
             });
         }
         return textArea;
+    }
+
+    private void setDirty()
+    {
+        if (!checkDirty) return;
+        controller.setDirty();
     }
 
 }

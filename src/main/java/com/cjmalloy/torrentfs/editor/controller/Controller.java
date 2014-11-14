@@ -9,6 +9,11 @@ public class Controller<T>
 
     public T model;
 
+    public Controller()
+    {
+        EVENT_BUS.register(this);
+    }
+
     public void update()
     {
         EVENT_BUS.post(model);

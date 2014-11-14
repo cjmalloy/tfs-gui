@@ -5,10 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 
-import com.cjmalloy.torrentfs.editor.event.FlushEvent;
+import com.cjmalloy.torrentfs.editor.event.DoFlushFile;
+import com.cjmalloy.torrentfs.editor.event.FlushFileEvent;
+import com.cjmalloy.torrentfs.editor.event.RefreshFileEvent;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 
 
@@ -20,21 +23,13 @@ public class EditorFileController extends Controller<EditorFileModel>
         this.model = model;
     }
 
-    public void refresh() throws IOException
-    {
-        load();
-        model.refresh = true;
-        update();
-    }
-
     /**
      * Write this file to the filesystem. If there was an error,
-     * leave model.dirty = true.
+     * leave model.editorModified = true.
      */
     public void flush(String text)
     {
-        model.flush = false;
-        if (!model.dirty) return;
+        if (!model.editorModified) return;
 
         model.contents = text.getBytes(Charset.forName("UTF-8"));
 
@@ -45,7 +40,7 @@ public class EditorFileController extends Controller<EditorFileModel>
             o.write(model.contents);
             o.close();
             o = null;
-            model.dirty = false;
+            model.editorModified = false;
         }
         catch (IOException e)
         {
@@ -57,13 +52,18 @@ public class EditorFileController extends Controller<EditorFileModel>
             {
                 IOUtils.closeQuietly(o);
             }
-            EVENT_BUS.post(new FlushEvent(model));
+            EVENT_BUS.post(new FlushFileEvent(model));
         }
     }
 
     public boolean hasUnsavedChanges()
     {
-        return model.dirty;
+        return model.editorModified;
+    }
+
+    public void ignoreModified()
+    {
+        model.fileSystemModified = false;
     }
 
     public void load() throws IOException
@@ -72,7 +72,14 @@ public class EditorFileController extends Controller<EditorFileModel>
         try
         {
             inf = new BufferedInputStream(new FileInputStream(model.path));
-            model.contents = IOUtils.toByteArray(inf);
+            byte[] fileContents = IOUtils.toByteArray(inf);
+            if (!model.fileSystemModified &&
+                model.contents != null &&
+                !Arrays.equals(model.contents, fileContents))
+            {
+                model.fileSystemModified = true;
+            }
+            model.contents = fileContents;
             inf.close();
             inf = null;
         }
@@ -86,15 +93,26 @@ public class EditorFileController extends Controller<EditorFileModel>
         update();
     }
 
+    public void loadAndRefresh() throws IOException
+    {
+        load();
+        refresh();
+    }
+
+    public void refresh()
+    {
+        model.fileSystemModified = false;
+        EVENT_BUS.post(new RefreshFileEvent(model));
+    }
+
     public void save()
     {
-        if (!model.dirty) return;
-        model.flush = true;
-        update();
+        if (!model.editorModified) return;
+        EVENT_BUS.post(new DoFlushFile(model));
     }
 
     public void setDirty()
     {
-        model.dirty = true;
+        model.editorModified = true;
     }
 }
