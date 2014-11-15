@@ -12,6 +12,7 @@ public class EditorFileModel
     public boolean isTfs;
     public int editMode = 0;
     public List<Facet> supportedFacets = new ArrayList<>();
+    public List<Property> properties = new ArrayList<>();
     public boolean editorModified = false;
     public boolean fileSystemModified = false;
 

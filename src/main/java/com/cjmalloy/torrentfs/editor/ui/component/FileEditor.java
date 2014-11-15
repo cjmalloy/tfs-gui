@@ -18,17 +18,19 @@ import com.cjmalloy.torrentfs.editor.ui.component.FacetEditor.FileEditorFactory;
 import com.google.common.eventbus.Subscribe;
 
 
-public class FacetContainer implements HasWidget
+public class FileEditor implements HasWidget
 {
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
     private JTabbedPane tabs;
-    private List<FacetEditor> facetEditors = new ArrayList<>();
 
     private EditorFileController controller;
+
+    private List<Facet> facets = new ArrayList<>();
+    private List<FacetEditor> facetEditors = new ArrayList<>();
     private int currentFacet;
 
-    public FacetContainer(EditorFileModel model)
+    public FileEditor(EditorFileModel model)
     {
         this.controller = MainController.get().editor.getController(model);
 
@@ -76,6 +78,36 @@ public class FacetContainer implements HasWidget
     public void update(EditorFileModel model)
     {
         if (controller.model != model) return;
+
+        for (Facet facet : model.supportedFacets)
+        {
+            if (facets.contains(facet)) continue;
+
+            FacetEditor c;
+            try
+            {
+                c = FileEditorFactory.create(facet, controller);
+                facets.add(facet);
+                facetEditors.add(c);
+                getWidget().addTab(getTitle(facet), c.getWidget());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                Controller.EVENT_BUS.post(new DoErrorMessage(e.getMessage()));
+            }
+        }
+        for (int i=facets.size()-1; i>=0; i--)
+        {
+            Facet facet = facets.get(i);
+            if (model.supportedFacets.contains(facet)) continue;
+
+            FacetEditor c = facetEditors.get(i);
+            c.close();
+            facetEditors.remove(i);
+            facets.remove(i);
+            getWidget().remove(c.getWidget());
+        }
 
         if (currentFacet != model.editMode)
         {

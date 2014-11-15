@@ -21,7 +21,6 @@ import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
-import com.cjmalloy.torrentfs.editor.ui.SettingsComponent;
 
 
 public class ExportSettingsComponent implements SettingsComponent<ExportSettings>
@@ -65,10 +64,11 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
     }
 
     @Override
-    public void load(ExportSettings settings)
+    public ExportSettingsComponent load(ExportSettings settings)
     {
         value = settings;
         loadModel();
+        return this;
     }
 
     private JPanel getTorrentSaveDir()
