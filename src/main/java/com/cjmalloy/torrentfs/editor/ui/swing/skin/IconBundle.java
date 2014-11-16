@@ -1,4 +1,4 @@
-package com.cjmalloy.torrentfs.editor.ui.skin;
+package com.cjmalloy.torrentfs.editor.ui.swing.skin;
 
 import javax.swing.ImageIcon;
 

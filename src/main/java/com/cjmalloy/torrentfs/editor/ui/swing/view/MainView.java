@@ -15,7 +15,7 @@ import javax.swing.JToolBar;
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
-import com.cjmalloy.torrentfs.editor.ui.skin.IconBundle;
+import com.cjmalloy.torrentfs.editor.ui.swing.skin.IconBundle;
 import com.google.common.eventbus.Subscribe;
 
 

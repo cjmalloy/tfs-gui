@@ -4,8 +4,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.swing.SwingWorker;
-
 import com.cjmalloy.torrentfs.editor.core.Continuation;
 import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
 import com.cjmalloy.torrentfs.editor.event.DoExport;
@@ -19,6 +17,8 @@ import com.cjmalloy.torrentfs.editor.event.ProgressStartEvent;
 import com.cjmalloy.torrentfs.editor.event.ProgressUpdateEvent;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
+import com.cjmalloy.torrentfs.editor.ui.Worker;
+import com.cjmalloy.torrentfs.editor.ui.WorkerExecutor;
 import com.cjmalloy.torrentfs.util.TfsUtil;
 import com.cjmalloy.torrentfs.util.TfsUtil.Encoding;
 import com.turn.ttorrent.common.Torrent;
@@ -109,36 +109,36 @@ public class MainController extends Controller<MainDocument>
         }
 
         EVENT_BUS.post(new ProgressStartEvent());
-        new SwingWorker<Void, Double>()
+        WorkerExecutor.get().execute(new Worker<Void, Double>()
         {
             @Override
-            protected Void doInBackground() throws Exception
+            public Void doInBackground(WorkerContext<Void, Double> context) throws Exception
             {
-                publish(0.1);
+                context.publish(0.1);
                 List<Torrent> torrents = TfsUtil.generateTorrentFromTfs(
                     fileSystem.model.workspace.toFile(),
                     Encoding.BENCODE_BASE64,
                     settings.getAnnounce(),
                     "tfs-gui"
                 );
-                publish(0.5);
+                context.publish(0.5);
                 TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
                 return null;
             }
 
             @Override
-            protected void process(List<Double> chunks)
+            public void process(WorkerContext<Void, Double> context, List<Double> chunks)
             {
                 EVENT_BUS.post(new ProgressUpdateEvent(chunks.get(0)));
             }
 
             @Override
-            protected void done()
+            public void done(WorkerContext<Void, Double> context)
             {
                 EVENT_BUS.post(new ProgressEndEvent());
                 EVENT_BUS.post(new DoMessage("done!"));
             }
-        }.execute();
+        });
     }
 
     private void open(Path workspace)

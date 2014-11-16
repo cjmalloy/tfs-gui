@@ -11,7 +11,6 @@ public interface SettingsComponent<T> extends HasWidget
     T getValue();
     SettingsComponent<T> load(T settings);
 
-
     public static class SettingsComponentFactory
     {
         public static <T> SettingsComponent<T> create(T settings) throws IOException

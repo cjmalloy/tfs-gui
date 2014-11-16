@@ -13,9 +13,8 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.SwingUtilities;
-
 import com.cjmalloy.torrentfs.editor.controller.Controller;
+import com.cjmalloy.torrentfs.editor.ui.UiUtils;
 
 
 public class WorkspaceWatcher
@@ -26,7 +25,7 @@ public class WorkspaceWatcher
     private Thread watchService = null;
     private volatile boolean stop = true;
 
-    public WatchService getWatcher()
+    private WatchService getWatcher()
     {
         try
         {
@@ -79,7 +78,7 @@ public class WorkspaceWatcher
                             WatchEvent<Path> ev = cast(event);
                             final Path child = workspace.resolve(ev.context());
 
-                            SwingUtilities.invokeLater(new Runnable()
+                            UiUtils.get().invokeLater(new Runnable()
                             {
                                 @Override
                                 public void run()

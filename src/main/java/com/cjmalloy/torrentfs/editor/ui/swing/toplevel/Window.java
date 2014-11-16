@@ -37,7 +37,7 @@ public class Window implements TopLevel
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         }
         catch (Throwable e) {}
-        
+
         frame.setTitle(R.getString("windowTitle"));
         frame.setSize(INITIAL_SIZE);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

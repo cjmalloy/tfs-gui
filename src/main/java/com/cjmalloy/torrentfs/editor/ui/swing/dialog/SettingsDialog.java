@@ -10,8 +10,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.SettingsComponent;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons.OkCancelDelegate;
+import com.cjmalloy.torrentfs.editor.ui.swing.component.SettingsComponent;
 
 
 public class SettingsDialog<T>
