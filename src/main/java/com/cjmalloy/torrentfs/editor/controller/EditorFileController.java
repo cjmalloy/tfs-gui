@@ -68,10 +68,10 @@ public class EditorFileController extends Controller<EditorFileModel>
 
     public void load() throws IOException
     {
-        BufferedInputStream inf = null;
+        FileInputStream inf = null;
         try
         {
-            inf = new BufferedInputStream(new FileInputStream(model.path));
+            inf = new FileInputStream(model.path);
             byte[] fileContents = IOUtils.toByteArray(inf);
             if (!model.fileSystemModified &&
                 model.contents != null &&
