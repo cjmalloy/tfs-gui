@@ -12,6 +12,7 @@ import javax.swing.tree.TreePath;
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.model.FileSystemModel;
+import com.cjmalloy.torrentfs.editor.ui.swing.component.PopupMenu;
 import com.cjmalloy.torrentfs.editor.ui.swing.model.FileTreeModel;
 import com.google.common.eventbus.Subscribe;
 
@@ -55,9 +56,14 @@ public class FileSystemView implements View
         }
     }
 
-    private void edit(int row, Path path)
+    protected void edit(Path path)
     {
         MainController.get().editor.openFile(path.toFile());
+    }
+
+    protected void showMenu(Path path, int x, int y)
+    {
+        new PopupMenu(MainController.get().getMenu(path.toFile())).show(getTree(), x, y);
     }
 
     private JTree getTree()
@@ -73,23 +79,32 @@ public class FileSystemView implements View
                     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
                     if (selRow != -1)
                     {
-                        if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON2)
+                        if (e.isPopupTrigger())
                         {
-                            showMenu(selRow, getPath(selPath));
+                            showMenu(getPath(selPath), e.getX(), e.getY());
                         }
                         else if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
                         {
-                            edit(selRow, getPath(selPath));
+                            edit(getPath(selPath));
+                        }
+                    }
+                }
+
+                public void mouseReleased(MouseEvent e)
+                {
+                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                    if (selRow != -1)
+                    {
+                        if (e.isPopupTrigger())
+                        {
+                            showMenu(getPath(selPath), e.getX(), e.getY());
                         }
                     }
                 }
             });
         }
         return tree;
-    }
-
-    private void showMenu(int row, Path path)
-    {
     }
 
     private static Path getPath(TreePath treePath)

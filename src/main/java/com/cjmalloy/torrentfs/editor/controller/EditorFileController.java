@@ -1,6 +1,5 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
