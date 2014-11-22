@@ -14,7 +14,7 @@ public class EditorModel
     {
         for (EditorFileModel f : openFiles)
         {
-            if (f.path == file) return f;
+            if (f.path.equals(file)) return f;
         }
         return null;
     }
