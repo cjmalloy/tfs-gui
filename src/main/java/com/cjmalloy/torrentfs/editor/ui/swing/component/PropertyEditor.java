@@ -93,7 +93,7 @@ public class PropertyEditor implements FacetEditor
         if (propertyContainer == null)
         {
             propertyContainer = new JPanel();
-            propertyContainer.setLayout(new BoxLayout(widget, BoxLayout.PAGE_AXIS));
+            propertyContainer.setLayout(new BoxLayout(propertyContainer, BoxLayout.PAGE_AXIS));
         }
         return propertyContainer;
     }
