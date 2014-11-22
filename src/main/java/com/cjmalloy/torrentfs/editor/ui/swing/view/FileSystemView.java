@@ -43,8 +43,6 @@ public class FileSystemView implements View
     {
         if (model.workspace != this.workspace)
         {
-            try
-            {
             if (model.workspace == null)
             {
                 tree.setModel(null);
@@ -53,12 +51,7 @@ public class FileSystemView implements View
             {
                 tree.setModel(new FileTreeModel(model.workspace.toFile()));
             }
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-            }
-            this.workspace  = model.workspace;
+            this.workspace = model.workspace;
         }
     }
 
