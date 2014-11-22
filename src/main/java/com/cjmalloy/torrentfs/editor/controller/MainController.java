@@ -28,6 +28,8 @@ public class MainController extends Controller<MainDocument>
 {
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
+    private static final String CREATOR_ID = "tfs-gui";
+
     private static MainController instance;
 
     public FileSystemController fileSystem;
@@ -119,7 +121,7 @@ public class MainController extends Controller<MainDocument>
                     fileSystem.model.workspace.toFile(),
                     Encoding.BENCODE_BASE64,
                     settings.getAnnounce(),
-                    "tfs-gui"
+                    CREATOR_ID
                 );
                 context.publish(0.5);
                 TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
