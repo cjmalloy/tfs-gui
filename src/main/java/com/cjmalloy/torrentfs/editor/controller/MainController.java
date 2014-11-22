@@ -35,7 +35,7 @@ public class MainController extends Controller<MainDocument>
     public FileSystemController fileSystem;
     public EditorController editor;
 
-    private MainController()
+    protected MainController()
     {
         model = new MainDocument();
 
