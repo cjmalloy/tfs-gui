@@ -76,7 +76,8 @@ public class WorkspaceWatcher
                             if (kind == StandardWatchEventKinds.OVERFLOW) continue;
 
                             WatchEvent<Path> ev = cast(event);
-                            final Path child = workspace.resolve(ev.context());
+                            Path dir = (Path)key.watchable();
+                            final Path child = dir.resolve(ev.context());
 
                             UiUtils.get().invokeLater(new Runnable()
                             {
