@@ -87,31 +87,6 @@ public class MainController extends Controller<MainDocument>
         return result;
     }
 
-    private void rebaseSiblings(Meta parent, Nested child) throws IOException
-    {
-        List<Nested> toMove = new ArrayList<>();
-        for (int i=parent.nested.size()-1; i>=0; i--)
-        {
-            Nested n = parent.nested.get(i);
-            if (n == child) continue;
-
-            if (n.absolutePath.toString().startsWith(child.absolutePath.toString()))
-            {
-                parent.nested.remove(i);
-                toMove.add(n);
-            }
-        }
-        if (toMove.size() == 0) return;
-
-        createTfs(child.absolutePath);
-        for (Nested n : toMove)
-        {
-            n.mount = child.absolutePath.toPath().relativize(n.absolutePath.toPath()).toString();
-        }
-        if (child.meta.nested == null) child.meta.nested = new ArrayList<>();
-        child.meta.nested.addAll(toMove);
-    }
-
     public Meta createTfs(File f) throws IOException
     {
         if (f.isDirectory()) f = Paths.get(f.toString(), ".tfs").toFile();
@@ -129,36 +104,6 @@ public class MainController extends Controller<MainDocument>
             parent.meta = meta;
         }
         return meta;
-    }
-
-    public void writeMeta() throws IOException
-    {
-        writeMeta(model.fileSystemModel.workspace.toFile(), model.metadata);
-    }
-
-    private void writeMeta(File f, Meta meta) throws IOException
-    {
-        if (meta == null) return;
-
-        TfsUtil.writeTfs(Paths.get(f.toString(), ".tfs").toFile(), meta);
-        if (meta.nested == null) return;
-
-        for (Nested n : meta.nested)
-        {
-            if (n.meta == null) continue;
-            writeMeta(n.absolutePath, n.meta);
-        }
-    }
-
-    public void removeNested(File f)
-    {
-        EVENT_BUS.post(new DoMessage("remove nested: " + f));
-    }
-
-    public void removeTfs(File f)
-    {
-        if (f.isDirectory()) f = Paths.get(f.toString(), ".tfs").toFile();
-        EVENT_BUS.post(new DoMessage("remove tfs: " + f));
     }
 
     /**
@@ -389,6 +334,17 @@ public class MainController extends Controller<MainDocument>
         });
     }
 
+    public void removeNested(File f)
+    {
+        EVENT_BUS.post(new DoMessage("remove nested: " + f));
+    }
+
+    public void removeTfs(File f)
+    {
+        if (f.isDirectory()) f = Paths.get(f.toString(), ".tfs").toFile();
+        EVENT_BUS.post(new DoMessage("remove tfs: " + f));
+    }
+
     public void requestExit()
     {
         editor.closeAll(new Continuation()
@@ -408,6 +364,11 @@ public class MainController extends Controller<MainDocument>
         fileSystem.update();
         editor.update();
         update();
+    }
+
+    public void writeMeta() throws IOException
+    {
+        writeMeta(model.fileSystemModel.workspace.toFile(), model.metadata);
     }
 
     private void export(final ExportSettings settings)
@@ -517,6 +478,45 @@ public class MainController extends Controller<MainDocument>
         editor.closeAll();
         fileSystem.setWorkspace(workspace);
         loadMeta();
+    }
+
+    private void rebaseSiblings(Meta parent, Nested child) throws IOException
+    {
+        List<Nested> toMove = new ArrayList<>();
+        for (int i=parent.nested.size()-1; i>=0; i--)
+        {
+            Nested n = parent.nested.get(i);
+            if (n == child) continue;
+
+            if (n.absolutePath.toString().startsWith(child.absolutePath.toString()))
+            {
+                parent.nested.remove(i);
+                toMove.add(n);
+            }
+        }
+        if (toMove.size() == 0) return;
+
+        createTfs(child.absolutePath);
+        for (Nested n : toMove)
+        {
+            n.mount = child.absolutePath.toPath().relativize(n.absolutePath.toPath()).toString();
+        }
+        if (child.meta.nested == null) child.meta.nested = new ArrayList<>();
+        child.meta.nested.addAll(toMove);
+    }
+
+    private void writeMeta(File f, Meta meta) throws IOException
+    {
+        if (meta == null) return;
+
+        TfsUtil.writeTfs(Paths.get(f.toString(), ".tfs").toFile(), meta);
+        if (meta.nested == null) return;
+
+        for (Nested n : meta.nested)
+        {
+            if (n.meta == null) continue;
+            writeMeta(n.absolutePath, n.meta);
+        }
     }
 
     public static MainController get()
