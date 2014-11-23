@@ -8,12 +8,14 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.TimeUnit;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
+import com.cjmalloy.torrentfs.editor.event.FileModificationEvent.FileModification;
 import com.cjmalloy.torrentfs.editor.ui.UiUtils;
 
 
@@ -24,19 +26,6 @@ public class WorkspaceWatcher
     private WatchService watcher = null;
     private Thread watchService = null;
     private volatile boolean stop = true;
-
-    private WatchService getWatcher()
-    {
-        try
-        {
-            return watcher = FileSystems.getDefault().newWatchService();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     public void setWorkspace(final Path workspace)
     {
@@ -72,7 +61,7 @@ public class WorkspaceWatcher
 
                         for (WatchEvent<?> event : key.pollEvents())
                         {
-                            WatchEvent.Kind<?> kind = event.kind();
+                            final WatchEvent.Kind<?> kind = event.kind();
                             if (kind == StandardWatchEventKinds.OVERFLOW) continue;
 
                             WatchEvent<Path> ev = cast(event);
@@ -84,7 +73,7 @@ public class WorkspaceWatcher
                                 @Override
                                 public void run()
                                 {
-                                    Controller.EVENT_BUS.post(new FileModificationEvent(child));
+                                    Controller.EVENT_BUS.post(new FileModificationEvent(child, getType(kind)));
                                 }
                             });
 
@@ -117,6 +106,27 @@ public class WorkspaceWatcher
             }
         };
         watchService.start();
+    }
+
+    private FileModification getType(Kind<?> kind)
+    {
+        if (kind == StandardWatchEventKinds.ENTRY_CREATE) return FileModification.CREATE;
+        if (kind == StandardWatchEventKinds.ENTRY_DELETE) return FileModification.DELETE;
+        if (kind == StandardWatchEventKinds.ENTRY_MODIFY) return FileModification.MODIFY;
+        throw new Error("unsupported java.nio.file.WatchEvent.Kind<?> type");
+    }
+
+    private WatchService getWatcher()
+    {
+        try
+        {
+            return watcher = FileSystems.getDefault().newWatchService();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
