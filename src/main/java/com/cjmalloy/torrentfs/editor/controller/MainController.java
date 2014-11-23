@@ -24,10 +24,10 @@ import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
 import com.cjmalloy.torrentfs.editor.ui.MenuItem;
 import com.cjmalloy.torrentfs.editor.ui.Worker;
 import com.cjmalloy.torrentfs.editor.ui.WorkerExecutor;
+import com.cjmalloy.torrentfs.model.Encoding;
 import com.cjmalloy.torrentfs.model.Meta;
 import com.cjmalloy.torrentfs.model.Nested;
 import com.cjmalloy.torrentfs.util.TfsUtil;
-import com.cjmalloy.torrentfs.util.TfsUtil.Encoding;
 import com.turn.ttorrent.common.Torrent;
 
 
@@ -36,6 +36,7 @@ public class MainController extends Controller<MainDocument>
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
     private static final String CREATOR_ID = "tfs-gui";
+    private static final Encoding DEFAULT_ENCODING = Encoding.BENCODE_BASE64;
 
     private static MainController instance;
 
@@ -51,16 +52,119 @@ public class MainController extends Controller<MainDocument>
         loadMeta();
     }
 
-    public void createNested(File f)
+    public Nested createNested(File f) throws IOException
     {
-        EVENT_BUS.post(new DoMessage("create nested: " + f));
+        Nested parent = getParentNested(f);
+
+        Meta parentMeta;
+        File parentAbsPath;
+        if (parent == null)
+        {
+            // parent is root
+            parentAbsPath = model.fileSystemModel.workspace.toFile();
+            if (parentAbsPath.equals(f)) return null;
+            if (model.metadata == null)
+            {
+                createTfs(parentAbsPath);
+            }
+            parentMeta = model.metadata;
+        }
+        else
+        {
+            if (parent.absolutePath.equals(f)) return parent;
+            if (parent.meta == null) createTfs(parent.absolutePath);
+            parentMeta = parent.meta;
+            parentAbsPath = parent.absolutePath;
+        }
+
+        Nested result = new Nested();
+        result.mount = parentAbsPath.toPath().relativize(f.toPath()).toString();
+        result.encoding = DEFAULT_ENCODING;
+        result.absolutePath = f;
+        if (parentMeta.nested == null) parentMeta.nested = new ArrayList<>();
+        parentMeta.nested.add(result);
+        rebaseSiblings(parentMeta, result);
+        return result;
     }
 
-    public void createTfs(File f)
+    private void rebaseSiblings(Meta parent, Nested child) throws IOException
     {
-        EVENT_BUS.post(new DoMessage("create tfs: " + f));
+        List<Nested> toMove = new ArrayList<>();
+        for (int i=parent.nested.size()-1; i>=0; i--)
+        {
+            Nested n = parent.nested.get(i);
+            if (n == child) continue;
+
+            if (n.absolutePath.toString().startsWith(child.absolutePath.toString()))
+            {
+                parent.nested.remove(i);
+                toMove.add(n);
+            }
+        }
+        if (toMove.size() == 0) return;
+
+        createTfs(child.absolutePath);
+        for (Nested n : toMove)
+        {
+            n.mount = child.absolutePath.toPath().relativize(n.absolutePath.toPath()).toString();
+        }
+        if (child.meta.nested == null) child.meta.nested = new ArrayList<>();
+        child.meta.nested.addAll(toMove);
     }
 
+    public Meta createTfs(File f) throws IOException
+    {
+        if (f.isDirectory()) f = Paths.get(f.toString(), ".tfs").toFile();
+        Nested parent = createNested(f.getParentFile());
+        if (parent != null && parent.meta != null) return parent.meta;
+
+        Meta meta = new Meta();
+        if (parent == null)
+        {
+            // parent is root
+            model.metadata = meta;
+        }
+        else
+        {
+            parent.meta = meta;
+        }
+        return meta;
+    }
+
+    public void writeMeta() throws IOException
+    {
+        writeMeta(model.fileSystemModel.workspace.toFile(), model.metadata);
+    }
+
+    private void writeMeta(File f, Meta meta) throws IOException
+    {
+        if (meta == null) return;
+
+        TfsUtil.writeTfs(Paths.get(f.toString(), ".tfs").toFile(), meta);
+        if (meta.nested == null) return;
+
+        for (Nested n : meta.nested)
+        {
+            if (n.meta == null) continue;
+            writeMeta(n.absolutePath, n.meta);
+        }
+    }
+
+    public void removeNested(File f)
+    {
+        EVENT_BUS.post(new DoMessage("remove nested: " + f));
+    }
+
+    public void removeTfs(File f)
+    {
+        if (f.isDirectory()) f = Paths.get(f.toString(), ".tfs").toFile();
+        EVENT_BUS.post(new DoMessage("remove tfs: " + f));
+    }
+
+    /**
+     * Prompt the user to export the torrent files for this tfs.
+     * This will update any nested torrent data if it has changed.
+     */
     public void export()
     {
         editor.saveCancelContinue(new Continuation()
@@ -80,6 +184,9 @@ public class MainController extends Controller<MainDocument>
         });
     }
 
+    /**
+     * Get the context menu for this file.
+     */
     public List<MenuItem> getMenu(final File f)
     {
         List<MenuItem> ret = new ArrayList<>();
@@ -91,7 +198,7 @@ public class MainController extends Controller<MainDocument>
                 editor.openFile(f);
             }
         }));
-        if (isTfs(f))
+        if (isTfs(f) || isTfsRootDir(f))
         {
             ret.add(new MenuItem(R.getString("removeTfs"), new Continuation()
             {
@@ -111,7 +218,15 @@ public class MainController extends Controller<MainDocument>
                     @Override
                     public void next()
                     {
-                        createTfs(f);
+                        try
+                        {
+                            createTfs(f);
+                            writeMeta();
+                        }
+                        catch (IOException e)
+                        {
+                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                        }
                     }
                 }));
             }
@@ -133,7 +248,15 @@ public class MainController extends Controller<MainDocument>
                     @Override
                     public void next()
                     {
-                        createNested(f);
+                        try
+                        {
+                            createNested(f);
+                            writeMeta();
+                        }
+                        catch (IOException e)
+                        {
+                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                        }
                     }
                 }));
             }
@@ -141,33 +264,49 @@ public class MainController extends Controller<MainDocument>
         return ret;
     }
 
+    /**
+     * Get the metadata for this nested torrent mount location.
+     */
     public Nested getNested(File f) throws IOException
     {
         return getNested(model.fileSystemModel.workspace.toFile(), model.metadata, f);
     }
 
+    /**
+     * Get the torrent that contains this file. If this is part of the root
+     * tfs then return null.
+     */
     public Nested getParentNested(File f) throws IOException
     {
         return getParentNested(model.fileSystemModel.workspace.toFile(), model.metadata, f);
     }
 
-    public Meta getTfs(File metaRoot, Nested n) throws IllegalStateException, IOException
+    /**
+     * Load the metadata for this nested torrent. If this nested torrnt is
+     * a legacy torrent and not a tfs torrent, return null.
+     */
+    public Meta getTfs(Nested n) throws IllegalStateException, IOException
     {
-        File f = Paths.get(metaRoot.toString(), n.mount).toFile();
-        if (!f.isDirectory()) return null;
+        if (!n.absolutePath.isDirectory()) return null;
 
-        File tfs = Paths.get(f.toString(), ".tfs").toFile();
+        File tfs = Paths.get(n.absolutePath.toString(), ".tfs").toFile();
         if (!tfs.exists()) return null;
 
         return Meta.load(tfs);
     }
 
+    /**
+     * Check if this folder is a torrent mount point.
+     */
     public boolean isMountPoint(File f) throws IOException
     {
         return f.equals(model.fileSystemModel.workspace.toFile()) ||
                isNested(f);
     }
 
+    /**
+     * Check if this folder is a mount point for a nested torrent.
+     */
     public boolean isNested(File f)
     {
         try
@@ -180,11 +319,15 @@ public class MainController extends Controller<MainDocument>
         }
     }
 
+    /**
+     * Check if this is a valid .tfs file.
+     */
     public boolean isTfs(File f)
     {
         try
         {
-            return f.toString().endsWith(".tfs") &&
+            return f.exists() &&
+                   f.toString().endsWith(".tfs") &&
                    isMountPoint(f.getParentFile());
         }
         catch (IOException e)
@@ -193,19 +336,40 @@ public class MainController extends Controller<MainDocument>
         }
     }
 
+    /**
+     * Check if this is a root directory for a nested tfs.
+     */
+    public boolean isTfsRootDir(File f)
+    {
+        return isTfs(Paths.get(f.toString(), ".tfs").toFile());
+    }
+
+    /**
+     * Read all tfs metadata from the filesystem.
+     */
     public void loadMeta()
     {
         try
         {
-            model.metadata = Meta.load(Paths.get(model.fileSystemModel.workspace.toString(), ".tfs").toFile());
+            File rootTfs = Paths.get(model.fileSystemModel.workspace.toString(), ".tfs").toFile();
+            if (!rootTfs.exists())
+            {
+                model.metadata = null;
+                return;
+            }
+
+            model.metadata = Meta.load(rootTfs);
             loadMeta(model.fileSystemModel.workspace.toFile(), model.metadata);
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
         }
     }
 
+    /**
+     * Prompt the user to choose a new workspace.
+     */
     public void open()
     {
         editor.closeAll(new Continuation()
@@ -223,16 +387,6 @@ public class MainController extends Controller<MainDocument>
                 }));
             }
         });
-    }
-
-    public void removeNested(File f)
-    {
-        EVENT_BUS.post(new DoMessage("remove nested: " + f));
-    }
-
-    public void removeTfs(File f)
-    {
-        EVENT_BUS.post(new DoMessage("remove tfs: " + f));
     }
 
     public void requestExit()
@@ -270,15 +424,22 @@ public class MainController extends Controller<MainDocument>
             @Override
             public Void doInBackground(WorkerContext<Void, Double> context) throws Exception
             {
-                context.publish(0.1);
-                List<Torrent> torrents = TfsUtil.generateTorrentFromTfs(
-                    fileSystem.model.workspace.toFile(),
-                    Encoding.BENCODE_BASE64,
-                    settings.getAnnounce(),
-                    CREATOR_ID
-                );
-                context.publish(0.5);
-                TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
+                try
+                {
+                    context.publish(0.1);
+                    List<Torrent> torrents = TfsUtil.generateTorrentFromTfs(
+                        fileSystem.model.workspace.toFile(),
+                        Encoding.BENCODE_BASE64,
+                        settings.getAnnounce(),
+                        CREATOR_ID
+                    );
+                    context.publish(0.5);
+                    TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
                 return null;
             }
 
@@ -329,21 +490,28 @@ public class MainController extends Controller<MainDocument>
 
             Nested result = getParentNested(Paths.get(metaRoot.toString(), n.mount).toFile(), n.meta, f);
             if (result != null) return result;
+            return n;
         }
         return null;
     }
 
     private void loadMeta(File metaRoot, Meta meta) throws IllegalStateException, IOException
     {
+        if (meta.nested == null) return;
+
         for (Nested n : meta.nested)
         {
-            n.meta = getTfs(metaRoot, n);
+            n.absolutePath = Paths.get(metaRoot.toString(), n.mount).toFile().getCanonicalFile();
+            n.meta = getTfs(n);
             if (n.meta == null) continue;
 
-            loadMeta(Paths.get(metaRoot.toString(), n.mount).toFile(), n.meta);
+            loadMeta(n.absolutePath, n.meta);
         }
     }
 
+    /**
+     * Change the current workspace.
+     */
     private void open(Path workspace)
     {
         editor.closeAll();

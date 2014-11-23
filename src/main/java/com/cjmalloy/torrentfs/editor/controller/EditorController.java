@@ -74,7 +74,6 @@ public class EditorController extends Controller<EditorModel>
         });
     }
 
-
     @Subscribe
     public void fileModified(FileModificationEvent event)
     {
