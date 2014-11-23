@@ -16,6 +16,7 @@ import com.cjmalloy.torrentfs.editor.event.DoMessage;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.event.DoShutdownNow;
+import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
 import com.cjmalloy.torrentfs.editor.event.ProgressEndEvent;
 import com.cjmalloy.torrentfs.editor.event.ProgressStartEvent;
 import com.cjmalloy.torrentfs.editor.event.ProgressUpdateEvent;
@@ -28,6 +29,7 @@ import com.cjmalloy.torrentfs.model.Encoding;
 import com.cjmalloy.torrentfs.model.Meta;
 import com.cjmalloy.torrentfs.model.Nested;
 import com.cjmalloy.torrentfs.util.TfsUtil;
+import com.google.common.eventbus.Subscribe;
 import com.turn.ttorrent.common.Torrent;
 
 
@@ -127,6 +129,15 @@ public class MainController extends Controller<MainDocument>
                 }));
             }
         });
+    }
+
+    @Subscribe
+    public void fileModified(FileModificationEvent event)
+    {
+        if (event.file.toString().endsWith(".tfs"))
+        {
+            loadMeta();
+        }
     }
 
     /**
