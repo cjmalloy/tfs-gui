@@ -73,30 +73,41 @@ public class FileSystemView implements View
             tree = new JTree();
             tree.addMouseListener(new MouseAdapter()
             {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    doPopupTrigger(e);
+                }
+
+                @Override
                 public void mousePressed(MouseEvent e)
                 {
-                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                    if (selRow != -1)
+                    doPopupTrigger(e);
+
+                    if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
                     {
-                        if (e.isPopupTrigger())
-                        {
-                            showMenu(getPath(selPath), e.getX(), e.getY());
-                        }
-                        else if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
+                        int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                        TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                        if (selRow != -1)
                         {
                             edit(getPath(selPath));
                         }
                     }
                 }
 
+                @Override
                 public void mouseReleased(MouseEvent e)
                 {
-                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                    if (selRow != -1)
+                    doPopupTrigger(e);
+                }
+
+                private void doPopupTrigger(MouseEvent e)
+                {
+                    if (e.isPopupTrigger())
                     {
-                        if (e.isPopupTrigger())
+                        int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                        TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                        if (selRow != -1)
                         {
                             showMenu(getPath(selPath), e.getX(), e.getY());
                         }
