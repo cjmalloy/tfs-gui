@@ -33,22 +33,7 @@ public class FileEditor implements HasWidget
     public FileEditor(EditorFileModel model)
     {
         this.controller = MainController.get().editor.getController(model);
-
-        for (Facet facet : model.supportedFacets)
-        {
-            FacetEditor c;
-            try
-            {
-                c = FileEditorFactory.create(facet, controller);
-                facetEditors.add(c);
-                getWidget().addTab(getTitle(facet), c.getWidget());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                Controller.EVENT_BUS.post(new DoErrorMessage(e.getMessage()));
-            }
-        }
+        update(model);
         Controller.EVENT_BUS.register(this);
     }
 
@@ -60,6 +45,7 @@ public class FileEditor implements HasWidget
             e.close();
         }
         tabs.removeAll();
+        facets.clear();
         facetEditors.clear();
     }
 
