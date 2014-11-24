@@ -154,29 +154,18 @@ public class MainController extends Controller<MainDocument>
                 editor.openFile(f);
             }
         }));
-        if (isTfs(f) || isTfsRootDir(f))
+        if (isLocked(f))
         {
-            ret.add(new MenuItem(R.getString("removeTfs"), new Continuation()
+            if (isNested(f))
             {
-                @Override
-                public void next()
-                {
-                    removeTfs(f);
-                }
-            }));
-        }
-        else
-        {
-            if (f.isDirectory())
-            {
-                ret.add(new MenuItem(R.getString("createTfs"), new Continuation()
+                ret.add(new MenuItem(R.getString("unlock"), new Continuation()
                 {
                     @Override
                     public void next()
                     {
                         try
                         {
-                            createTfs(f);
+                            unlock(f);
                             writeMeta();
                         }
                         catch (IOException e)
@@ -186,35 +175,90 @@ public class MainController extends Controller<MainDocument>
                     }
                 }));
             }
+        }
+        else
+        {
             if (isNested(f))
             {
-                ret.add(new MenuItem(R.getString("removeNested"), new Continuation()
+                ret.add(new MenuItem(R.getString("lock"), new Continuation()
                 {
                     @Override
                     public void next()
                     {
-                        removeNested(f);
+                        try
+                        {
+                            lock(f);
+                            writeMeta();
+                        }
+                        catch (IOException e)
+                        {
+                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                        }
+                    }
+                }));
+            }
+            if (isTfs(f) || isTfsRootDir(f))
+            {
+                ret.add(new MenuItem(R.getString("removeTfs"), new Continuation()
+                {
+                    @Override
+                    public void next()
+                    {
+                        removeTfs(f);
                     }
                 }));
             }
             else
             {
-                ret.add(new MenuItem(R.getString("createNested"), new Continuation()
+                if (f.isDirectory())
                 {
-                    @Override
-                    public void next()
+                    ret.add(new MenuItem(R.getString("createTfs"), new Continuation()
                     {
-                        try
+                        @Override
+                        public void next()
                         {
-                            createNested(f);
-                            writeMeta();
+                            try
+                            {
+                                createTfs(f);
+                                writeMeta();
+                            }
+                            catch (IOException e)
+                            {
+                                Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                            }
                         }
-                        catch (IOException e)
+                    }));
+                }
+                if (isNested(f))
+                {
+                    ret.add(new MenuItem(R.getString("removeNested"), new Continuation()
+                    {
+                        @Override
+                        public void next()
                         {
-                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                            removeNested(f);
                         }
-                    }
-                }));
+                    }));
+                }
+                else
+                {
+                    ret.add(new MenuItem(R.getString("createNested"), new Continuation()
+                    {
+                        @Override
+                        public void next()
+                        {
+                            try
+                            {
+                                createNested(f);
+                                writeMeta();
+                            }
+                            catch (IOException e)
+                            {
+                                Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                            }
+                        }
+                    }));
+                }
             }
         }
         return ret;
@@ -251,6 +295,24 @@ public class MainController extends Controller<MainDocument>
         if (!tfs.exists()) return null;
 
         return Meta.load(tfs);
+    }
+
+    /**
+     * Check if this file is under a nested torrent that is locked.
+     */
+    public boolean isLocked(File f)
+    {
+        try
+        {
+            Nested n;
+            while ((n = getParentNested(f)) != null)
+            {
+                if (n.readOnly) return true;
+                f = f.getParentFile();
+            }
+        }
+        catch (IOException e) {}
+        return false;
     }
 
     /**
@@ -325,6 +387,11 @@ public class MainController extends Controller<MainDocument>
         }
     }
 
+    public void lock(File f) throws IOException
+    {
+        getNested(f).readOnly = true;
+    }
+
     /**
      * Prompt the user to choose a new workspace.
      */
@@ -369,6 +436,11 @@ public class MainController extends Controller<MainDocument>
                 update();
             }
         });
+    }
+
+    public void unlock(File f) throws IOException
+    {
+        getNested(f).readOnly = false;
     }
 
     @Override
