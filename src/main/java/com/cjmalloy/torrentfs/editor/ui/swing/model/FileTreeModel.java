@@ -42,25 +42,17 @@ public class FileTreeModel implements TreeModel
     @Subscribe
     public void fileModified(FileModificationEvent event)
     {
-        System.out.println(event.file);
-        try
+        switch (event.type)
         {
-            switch (event.type)
-            {
-            case CREATE:
-                fireTreeNodesInserted(event.file.toFile());
-                break;
-            case DELETE:
-                fireTreeNodesDeleted(event.file.toFile());
-                break;
-            case MODIFY:
-                fireTreeNodesChanged(event.file.toFile());
-                break;
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        case CREATE:
+            fireTreeNodesInserted(event.file.toFile());
+            break;
+        case DELETE:
+            fireTreeNodesDeleted(event.file.toFile());
+            break;
+        case MODIFY:
+            fireTreeNodesChanged(event.file.toFile());
+            break;
         }
     }
 
