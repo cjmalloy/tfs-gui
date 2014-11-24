@@ -284,7 +284,7 @@ public class MainController extends Controller<MainDocument>
     }
 
     /**
-     * Load the metadata for this nested torrent. If this nested torrnt is
+     * Load the metadata for this nested torrent. If this nested torrent is
      * a legacy torrent and not a tfs torrent, return null.
      */
     public Meta getTfs(Nested n) throws IllegalStateException, IOException
@@ -325,7 +325,7 @@ public class MainController extends Controller<MainDocument>
     }
 
     /**
-     * Check if this folder is a mount point for a nested torrent.
+     * Check if this folder or file is a mount point for a nested torrent.
      */
     public boolean isNested(File f)
     {
