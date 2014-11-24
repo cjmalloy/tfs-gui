@@ -225,6 +225,7 @@ public class MainController extends Controller<MainDocument>
      */
     public Nested getNested(File f) throws IOException
     {
+        if (model.metadata == null) return null;
         return getNested(model.fileSystemModel.workspace.toFile(), model.metadata, f);
     }
 
@@ -234,6 +235,7 @@ public class MainController extends Controller<MainDocument>
      */
     public Nested getParentNested(File f) throws IOException
     {
+        if (model.metadata == null) return null;
         return getParentNested(model.fileSystemModel.workspace.toFile(), model.metadata, f);
     }
 
