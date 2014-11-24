@@ -41,6 +41,7 @@ public class EditorController extends Controller<EditorModel>
     {
         fileControllers.remove(getController(f));
         model.openFiles.remove(f);
+        model.activeFile--;
         update();
     }
 
@@ -51,6 +52,7 @@ public class EditorController extends Controller<EditorModel>
     {
         fileControllers.clear();
         model.openFiles.clear();
+        model.activeFile = -1;
         update();
     }
 
