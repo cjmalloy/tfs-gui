@@ -74,12 +74,6 @@ public class FileSystemView implements View
             tree.addMouseListener(new MouseAdapter()
             {
                 @Override
-                public void mouseClicked(MouseEvent e)
-                {
-                    doPopupTrigger(e);
-                }
-
-                @Override
                 public void mousePressed(MouseEvent e)
                 {
                     doPopupTrigger(e);
