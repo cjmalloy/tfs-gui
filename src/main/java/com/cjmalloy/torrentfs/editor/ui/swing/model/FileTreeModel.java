@@ -24,6 +24,8 @@ import com.google.common.eventbus.Subscribe;
 public class FileTreeModel implements TreeModel
 {
     private File root;
+    private File lastCreated = null;
+    private File lastDeleted = null;
 
     private List<TreeModelListener> listeners = new ArrayList<>();
 
@@ -42,13 +44,20 @@ public class FileTreeModel implements TreeModel
     @Subscribe
     public void fileModified(FileModificationEvent event)
     {
+        File f = event.file.toFile();
         switch (event.type)
         {
         case CREATE:
-            fireTreeNodesInserted(event.file.toFile());
+            lastDeleted = null;
+            if (lastCreated != null && lastCreated.equals(f)) return;
+            lastCreated = f;
+            fireTreeNodesInserted(f);
             break;
         case DELETE:
-            fireTreeNodesDeleted(event.file.toFile());
+            lastCreated = null;
+            if (lastDeleted != null && lastDeleted.equals(f)) return;
+            lastDeleted = f;
+            fireTreeNodesDeleted(f);
             break;
         case MODIFY:
             fireTreeNodesChanged(event.file.toFile());

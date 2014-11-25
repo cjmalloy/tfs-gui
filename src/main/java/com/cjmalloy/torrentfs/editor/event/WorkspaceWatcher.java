@@ -21,7 +21,7 @@ import com.cjmalloy.torrentfs.editor.ui.UiUtils;
 
 public class WorkspaceWatcher
 {
-    private static final int POLL_TIMEOUT = 2000;
+    private static final int POLL_TIMEOUT = 800;
 
     private WatchService watcher = null;
     private Thread watchService = null;
