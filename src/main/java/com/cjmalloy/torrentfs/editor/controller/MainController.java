@@ -205,7 +205,15 @@ public class MainController extends Controller<MainDocument>
                     @Override
                     public void next()
                     {
-                        removeTfs(f);
+                        try
+                        {
+                            removeTfs(f);
+                            writeMeta();
+                        }
+                        catch (IOException e)
+                        {
+                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+                        }
                     }
                 }));
             }
@@ -428,10 +436,11 @@ public class MainController extends Controller<MainDocument>
         getParentNested(f.getParentFile()).meta.nested.remove(getNested(f));
     }
 
-    public void removeTfs(File f)
+    public void removeTfs(File f) throws IOException
     {
         if (f.isDirectory()) f = Paths.get(f.toString(), ".tfs").toFile();
-        EVENT_BUS.post(new DoMessage("remove tfs: " + f));
+        getParentNested(f).meta = null;
+        f.delete();
     }
 
     public void requestExit()
