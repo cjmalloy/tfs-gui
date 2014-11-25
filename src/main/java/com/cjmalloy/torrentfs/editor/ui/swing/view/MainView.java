@@ -73,7 +73,7 @@ public class MainView implements View
     {
         if (exportButton == null)
         {
-            exportButton = new JButton(IconBundle.get().getExportIcon());
+            exportButton = new JButton(IconBundle.get().exportIcon);
             exportButton.setToolTipText(R.getString("exportButtonTooltip"));
             exportButton.addActionListener(new ActionListener()
             {
@@ -113,7 +113,7 @@ public class MainView implements View
     {
         if (openButton == null)
         {
-            openButton = new JButton(IconBundle.get().getOpenIcon());
+            openButton = new JButton(IconBundle.get().openIcon);
             openButton.setToolTipText(R.getString("openButtonTooltip"));
             openButton.addActionListener(new ActionListener()
             {

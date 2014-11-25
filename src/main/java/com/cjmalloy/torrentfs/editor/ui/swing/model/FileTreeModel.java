@@ -207,7 +207,7 @@ public class FileTreeModel implements TreeModel
         return new TreePath(path.toArray());
     }
 
-    private class TreeFile extends File
+    public class TreeFile extends File
     {
         private static final long serialVersionUID = 1L;
 
