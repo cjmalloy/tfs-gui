@@ -4,7 +4,7 @@
 
   <groupId>com.cjmalloy</groupId>
   <artifactId>tfs-gui</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <packaging>jar</packaging>
 
   <name>tfs-gui</name>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>com.cjmalloy</groupId>
       <artifactId>torrent-fs-core</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <version>0.2</version>
     </dependency>
 
     <dependency>
@@ -111,7 +111,7 @@
   <repositories>
     <repository>
       <id>cjmalloy-repo</id>
-      <url>http://cjmalloy.com/m2/libs-snapshot</url>
+      <url>http://cjmalloy.com/m2/libs-release</url>
     </repository>
   </repositories>
 </project>
