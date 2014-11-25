@@ -285,20 +285,6 @@ public class MainController extends Controller<MainDocument>
     }
 
     /**
-     * Load the metadata for this nested torrent. If this nested torrent is
-     * a legacy torrent and not a tfs torrent, return null.
-     */
-    public Meta getTfs(Nested n) throws IllegalStateException, IOException
-    {
-        if (!n.absolutePath.isDirectory()) return null;
-
-        File tfs = Paths.get(n.absolutePath.toString(), ".tfs").toFile();
-        if (!tfs.exists()) return null;
-
-        return Meta.load(tfs);
-    }
-
-    /**
      * Check if this file is under a nested torrent that is locked.
      */
     public boolean isLocked(File f)
@@ -386,6 +372,20 @@ public class MainController extends Controller<MainDocument>
         {
             Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
         }
+    }
+
+    /**
+     * Load the metadata for this nested torrent. If this nested torrent is
+     * a legacy torrent and not a tfs torrent, return null.
+     */
+    public Meta loadTfs(Nested n) throws IllegalStateException, IOException
+    {
+        if (!n.absolutePath.isDirectory()) return null;
+
+        File tfs = Paths.get(n.absolutePath.toString(), ".tfs").toFile();
+        if (!tfs.exists()) return null;
+
+        return Meta.load(tfs);
     }
 
     public void lock(File f) throws IOException
@@ -554,7 +554,7 @@ public class MainController extends Controller<MainDocument>
         for (Nested n : meta.nested)
         {
             n.absolutePath = Paths.get(metaRoot.toString(), n.mount).toFile().getCanonicalFile();
-            n.meta = getTfs(n);
+            n.meta = loadTfs(n);
             if (n.meta == null) continue;
 
             loadMeta(n.absolutePath, n.meta);
