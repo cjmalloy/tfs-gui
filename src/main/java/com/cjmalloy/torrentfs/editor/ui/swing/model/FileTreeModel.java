@@ -48,15 +48,19 @@ public class FileTreeModel implements TreeModel
         switch (event.type)
         {
         case CREATE:
+            // Ignore duplicate events
             lastDeleted = null;
             if (lastCreated != null && lastCreated.equals(f)) return;
             lastCreated = f;
+
             fireTreeNodesInserted(f);
             break;
         case DELETE:
+            // Ignore duplicate events
             lastCreated = null;
             if (lastDeleted != null && lastDeleted.equals(f)) return;
             lastDeleted = f;
+
             fireTreeNodesDeleted(f);
             break;
         case MODIFY:
