@@ -1,25 +1,20 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
-import com.cjmalloy.torrentfs.editor.controller.Controller;
-import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
-import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 
 
@@ -27,33 +22,20 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
 {
     private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
-    private static final Dimension INPUT_SIZE = new Dimension(300, 30);
-
     private JPanel widget;
-    private JPanel torrentSaveDir;
-    private JTextField torrentSaveDirInput;
-    private JButton torrentSaveDirBrowse;
+    private DirSelector torrentSaveDir;
     private JPanel trackers;
     private JTextArea trackersInput;
+    private JPanel cacheArea;
+    private JCheckBox initCache;
+    private DirSelector cacheDir;
+    private JCheckBox useLinks;
 
     private ExportSettings value;
 
     public ExportSettingsComponent()
     {
         load(new ExportSettings());
-    }
-
-    @Override
-    public Component getWidget()
-    {
-        if (widget == null)
-        {
-            widget = new JPanel();
-            widget.setLayout(new BoxLayout(widget, BoxLayout.PAGE_AXIS));
-            widget.add(getTorrentSaveDir());
-            widget.add(getTrackers());
-        }
-        return widget;
     }
 
     @Override
@@ -64,6 +46,20 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
     }
 
     @Override
+    public Component getWidget()
+    {
+        if (widget == null)
+        {
+            widget = new JPanel();
+            widget.setLayout(new BoxLayout(widget, BoxLayout.PAGE_AXIS));
+            widget.add(getTorrentSaveDir().getWidget());
+            widget.add(getTrackers());
+            widget.add(getCacheArea());
+        }
+        return widget;
+    }
+
+    @Override
     public ExportSettingsComponent load(ExportSettings settings)
     {
         value = settings;
@@ -71,51 +67,54 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
         return this;
     }
 
-    private JPanel getTorrentSaveDir()
+    private JPanel getCacheArea()
     {
-        if (torrentSaveDir == null)
+        if (cacheArea == null)
         {
-            torrentSaveDir = new JPanel();
-            torrentSaveDir.setLayout(new BoxLayout(torrentSaveDir, BoxLayout.LINE_AXIS));
-            torrentSaveDir.add(new Label(R.getString("torrentSaveDirLabel")));
-            torrentSaveDir.add(getTorrentSaveDirInput());
-            torrentSaveDir.add(getTorrentSaveDirBrowse());
+            cacheArea = new JPanel();
+            cacheArea.setBorder(new TitledBorder(R.getString("cacheAreaLabel")));
+            cacheArea.setLayout(new BoxLayout(cacheArea, BoxLayout.PAGE_AXIS));
+            cacheArea.add(getInitCache());
+            cacheArea.add(getCacheDir().getWidget());
+            cacheArea.add(getUseLinks());
         }
-        return torrentSaveDir;
+        return cacheArea;
     }
 
-    private JButton getTorrentSaveDirBrowse()
+    private DirSelector getCacheDir()
     {
-        if (torrentSaveDirBrowse == null)
+        if (cacheDir == null)
         {
-            torrentSaveDirBrowse = new JButton("...");
-            torrentSaveDirBrowse.addActionListener(new ActionListener()
+            cacheDir = new DirSelector(R.getString("cacheDirLabel"));
+        }
+        return cacheDir;
+    }
+
+    private JCheckBox getInitCache()
+    {
+        if (initCache == null)
+        {
+            initCache = new JCheckBox(R.getString("initCacheCheckbox"));
+            initCache.addActionListener(new ActionListener()
             {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    Controller.EVENT_BUS.post(new DoOpenFolder(new OpenFolderCallback()
-                    {
-                        @Override
-                        public void withFolder(Path folder)
-                        {
-                            getTorrentSaveDirInput().setText(folder.toString());
-                        }
-                    }));
+                    getCacheDir().getWidget().setEnabled(getInitCache().isSelected());
+                    getUseLinks().setEnabled(getInitCache().isSelected());
                 }
             });
         }
-        return torrentSaveDirBrowse;
+        return initCache;
     }
 
-    private JTextField getTorrentSaveDirInput()
+    private DirSelector getTorrentSaveDir()
     {
-        if (torrentSaveDirInput == null)
+        if (torrentSaveDir == null)
         {
-            torrentSaveDirInput = new JTextField();
-            torrentSaveDirInput.setPreferredSize(INPUT_SIZE);
+            torrentSaveDir = new DirSelector(R.getString("torrentSaveDirLabel"));
         }
-        return torrentSaveDirInput;
+        return torrentSaveDir;
     }
 
     private JPanel getTrackers()
@@ -140,15 +139,24 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
         return trackersInput;
     }
 
+    private JCheckBox getUseLinks()
+    {
+        if (useLinks == null)
+        {
+            useLinks = new JCheckBox(R.getString("getUseLinksCheckbox"));
+        }
+        return useLinks;
+    }
+
     private void loadModel()
     {
         try
         {
-            getTorrentSaveDirInput().setText(value.torrentSaveDir.toString());
+            getTorrentSaveDir().setText(value.torrentSaveDir.toString());
         }
         catch (Exception e)
         {
-            getTorrentSaveDirInput().setText("");
+            getTorrentSaveDir().setText("");
         }
         String trackersText = "";
         if (value.announce != null)
@@ -159,11 +167,23 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
             }
         }
         getTrackersInput().setText(trackersText);
+        getInitCache().setSelected(value.cache != null);
+        getUseLinks().setSelected(value.useLinks);
+        getCacheDir().getWidget().setEnabled(value.cache != null);
+        getUseLinks().setEnabled(value.cache != null);
+        if (value.cache == null)
+        {
+            getCacheDir().setText("");
+        }
+        else
+        {
+            getCacheDir().setText(value.cache.toString());
+        }
     }
 
     private void saveToModel()
     {
-        value.torrentSaveDir = new File(getTorrentSaveDirInput().getText());
+        value.torrentSaveDir = new File(getTorrentSaveDir().getText());
         if (getTrackersInput().getText().length() == 0)
         {
             value.announce = null;
@@ -172,5 +192,14 @@ public class ExportSettingsComponent implements SettingsComponent<ExportSettings
         {
             value.announce = Arrays.asList(getTrackersInput().getText().split("\n"));
         }
+        if (getInitCache().isSelected())
+        {
+            value.cache = new File(getCacheDir().getText());
+        }
+        else
+        {
+            value.cache = null;
+        }
+        value.useLinks = getUseLinks().isSelected();
     }
 }

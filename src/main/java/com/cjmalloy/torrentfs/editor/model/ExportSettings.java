@@ -19,6 +19,8 @@ public class ExportSettings
 
     public File torrentSaveDir;
     public List<String> announce = DEFAULT_ANNOUNCE;
+    public File cache;
+    public boolean useLinks;
 
     public List<List<URI>> getAnnounce() throws URISyntaxException
     {
@@ -38,6 +40,9 @@ public class ExportSettings
         if ( torrentSaveDir == null ||
             !torrentSaveDir.exists() ||
             !torrentSaveDir.isDirectory()) return false;
+        if ( cache != null &&
+             cache.exists() &&
+            !cache.isDirectory()) return false;
 
         try
         {

@@ -45,6 +45,8 @@ public class MainController extends Controller<MainDocument>
     public FileSystemController fileSystem;
     public EditorController editor;
 
+    private boolean ignoreFsUpdates = false;
+
     protected MainController()
     {
         model = new MainDocument();
@@ -134,6 +136,8 @@ public class MainController extends Controller<MainDocument>
     @Subscribe
     public void fileModified(FileModificationEvent event)
     {
+        if (ignoreFsUpdates) return;
+
         //TODO: try to only load files that have changed
         if (event.file.toString().endsWith(".tfs"))
         {
@@ -487,6 +491,8 @@ public class MainController extends Controller<MainDocument>
             return;
         }
 
+        ignoreFsUpdates = true;
+
         EVENT_BUS.post(new ProgressStartEvent());
         WorkerExecutor.get().execute(new Worker<Void, Double>()
         {
@@ -500,7 +506,9 @@ public class MainController extends Controller<MainDocument>
                         fileSystem.model.workspace.toFile(),
                         Encoding.BENCODE_BASE64,
                         settings.getAnnounce(),
-                        CREATOR_ID
+                        CREATOR_ID,
+                        settings.cache,
+                        settings.useLinks
                     );
                     context.publish(0.5);
                     TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
@@ -517,6 +525,8 @@ public class MainController extends Controller<MainDocument>
             {
                 EVENT_BUS.post(new ProgressEndEvent());
                 EVENT_BUS.post(new DoMessage("done!"));
+                ignoreFsUpdates = false;
+                loadMeta();
             }
 
             @Override
