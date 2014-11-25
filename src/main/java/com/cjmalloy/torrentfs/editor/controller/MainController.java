@@ -441,7 +441,12 @@ public class MainController extends Controller<MainDocument>
 
     public void unlock(File f) throws IOException
     {
-        getNested(f).readOnly = false;
+        Nested n;
+        while ((n = getParentNested(f)) != null)
+        {
+            n.readOnly = false;
+            f = f.getParentFile();
+        }
     }
 
     @Override
