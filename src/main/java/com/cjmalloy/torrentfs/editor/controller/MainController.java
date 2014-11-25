@@ -134,6 +134,7 @@ public class MainController extends Controller<MainDocument>
     @Subscribe
     public void fileModified(FileModificationEvent event)
     {
+        //TODO: try to only load files that have changed
         if (event.file.toString().endsWith(".tfs"))
         {
             loadMeta();
