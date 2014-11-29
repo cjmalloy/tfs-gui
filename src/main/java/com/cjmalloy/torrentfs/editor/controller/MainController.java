@@ -41,20 +41,21 @@ public class MainController extends Controller<MainDocument>
     private static final Encoding DEFAULT_ENCODING = Encoding.BENCODE_BASE64;
 
     private static MainController instance = new MainController();
+    static
+    {
+        instance.model = new MainDocument();
+
+        instance.fileSystem = new FileSystemController(instance.model.fileSystemModel);
+        instance.editor = new EditorController(instance.model.editorModel);
+        instance.loadMeta();
+    }
 
     public FileSystemController fileSystem;
     public EditorController editor;
 
     private boolean ignoreFsUpdates = false;
 
-    protected MainController()
-    {
-        model = new MainDocument();
-
-        fileSystem = new FileSystemController(model.fileSystemModel);
-        editor = new EditorController(model.editorModel);
-        loadMeta();
-    }
+    protected MainController() {}
 
     public Nested createNested(File f) throws IOException
     {
