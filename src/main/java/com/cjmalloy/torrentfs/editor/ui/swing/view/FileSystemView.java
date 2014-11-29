@@ -58,14 +58,12 @@ public class FileSystemView implements View
             if (model.workspace == null)
             {
                 treeModel = null;
-                getTree().setVisible(false);
-                tree.setCellRenderer(null);
+                getTree().setCellRenderer(null);
             }
             else
             {
                 treeModel = new FileTreeModel(model.workspace.toFile());
-                tree.setCellRenderer(cellRenderer);
-                getTree().setVisible(true);
+                getTree().setCellRenderer(cellRenderer);
             }
             getTree().setModel(treeModel);
             this.workspace = model.workspace;
@@ -87,7 +85,7 @@ public class FileSystemView implements View
         if (tree == null)
         {
             tree = new JTree();
-            tree.setVisible(false);
+            tree.setCellRenderer(null);
             tree.addMouseListener(new MouseAdapter()
             {
                 @Override
