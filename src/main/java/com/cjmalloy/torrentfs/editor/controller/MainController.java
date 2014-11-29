@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.cjmalloy.torrentfs.editor.core.Continuation;
+import com.cjmalloy.torrentfs.editor.core.ExceptionHandler;
+import com.cjmalloy.torrentfs.editor.core.ThrowsContinuation;
 import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
 import com.cjmalloy.torrentfs.editor.event.DoExport;
 import com.cjmalloy.torrentfs.editor.event.DoExport.ExportCallback;
@@ -50,9 +52,22 @@ public class MainController extends Controller<MainDocument>
         instance.loadMeta();
     }
 
+    private static ExceptionHandler ioExceptionHandler = new ExceptionHandler()
+    {
+        @Override
+        public void handleException(Exception e)
+        {
+            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
+        }
+    };
+
     public FileSystemController fileSystem;
     public EditorController editor;
 
+    /**
+     * Ignore file system updates while this class is writing to the
+     * file system.
+     */
     private boolean ignoreFsUpdates = false;
 
     protected MainController() {}
@@ -164,122 +179,80 @@ public class MainController extends Controller<MainDocument>
         {
             if (isNested(f))
             {
-                ret.add(new MenuItem(R.getString("unlock"), new Continuation()
+                ret.add(new MenuItem(R.getString("unlock"), new ThrowsContinuation()
                 {
                     @Override
-                    public void next()
+                    public void next() throws IOException
                     {
-                        try
-                        {
-                            unlock(f);
-                            writeMeta();
-                        }
-                        catch (IOException e)
-                        {
-                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
-                        }
+                        unlock(f);
+                        writeMeta();
                     }
-                }));
+                }, ioExceptionHandler));
             }
         }
         else
         {
             if (isNested(f))
             {
-                ret.add(new MenuItem(R.getString("lock"), new Continuation()
+                ret.add(new MenuItem(R.getString("lock"), new ThrowsContinuation()
                 {
                     @Override
-                    public void next()
+                    public void next() throws IOException
                     {
-                        try
-                        {
-                            lock(f);
-                            writeMeta();
-                        }
-                        catch (IOException e)
-                        {
-                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
-                        }
+                        lock(f);
+                        writeMeta();
                     }
-                }));
+                }, ioExceptionHandler));
             }
             if (isTfs(f) || isTfsRootDir(f))
             {
-                ret.add(new MenuItem(R.getString("removeTfs"), new Continuation()
+                ret.add(new MenuItem(R.getString("removeTfs"), new ThrowsContinuation()
                 {
                     @Override
-                    public void next()
+                    public void next() throws IOException
                     {
-                        try
-                        {
-                            removeTfs(f);
-                            writeMeta();
-                        }
-                        catch (IOException e)
-                        {
-                            Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
-                        }
+                        removeTfs(f);
+                        writeMeta();
                     }
-                }));
+                }, ioExceptionHandler));
             }
             else
             {
                 if (f.isDirectory())
                 {
-                    ret.add(new MenuItem(R.getString("createTfs"), new Continuation()
+                    ret.add(new MenuItem(R.getString("createTfs"), new ThrowsContinuation()
                     {
                         @Override
-                        public void next()
+                        public void next() throws IOException
                         {
-                            try
-                            {
-                                createTfs(f);
-                                writeMeta();
-                            }
-                            catch (IOException e)
-                            {
-                                Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
-                            }
+                            createTfs(f);
+                            writeMeta();
                         }
-                    }));
+                    }, ioExceptionHandler));
                 }
                 if (isNested(f))
                 {
-                    ret.add(new MenuItem(R.getString("removeNested"), new Continuation()
+                    ret.add(new MenuItem(R.getString("removeNested"), new ThrowsContinuation()
                     {
                         @Override
-                        public void next()
+                        public void next() throws IOException
                         {
-                            try
-                            {
-                                removeNested(f);
-                                writeMeta();
-                            }
-                            catch (IOException e)
-                            {
-                                Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
-                            }
+                            removeNested(f);
+                            writeMeta();
                         }
-                    }));
+                    }, ioExceptionHandler));
                 }
                 else
                 {
-                    ret.add(new MenuItem(R.getString("createNested"), new Continuation()
+                    ret.add(new MenuItem(R.getString("createNested"), new ThrowsContinuation()
                     {
                         @Override
-                        public void next()
+                        public void next() throws IOException
                         {
-                            try
-                            {
-                                createNested(f);
-                                writeMeta();
-                            }
-                            catch (IOException e)
-                            {
-                                Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
-                            }
+                            createNested(f);
+                            writeMeta();
                         }
-                    }));
+                    }, ioExceptionHandler));
                 }
             }
         }

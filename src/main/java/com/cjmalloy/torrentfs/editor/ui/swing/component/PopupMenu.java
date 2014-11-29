@@ -43,9 +43,16 @@ public class PopupMenu
         m.addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e)
+            public void actionPerformed(ActionEvent event)
             {
-                i.ct.next();
+                try
+                {
+                    i.ct.next();
+                }
+                catch (Exception e)
+                {
+                    i.handler.handleException(e);
+                }
             }
         });
         return m;
