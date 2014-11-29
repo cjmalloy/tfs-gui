@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
@@ -26,6 +27,7 @@ public class FileSystemView implements View
 
     private Path workspace = null;
     private FileTreeModel treeModel = null;
+    private TreeCellRenderer cellRenderer = new TfsTreeCellRenderer();
 
     public FileSystemView()
     {
@@ -57,10 +59,12 @@ public class FileSystemView implements View
             {
                 treeModel = null;
                 getTree().setVisible(false);
+                tree.setCellRenderer(null);
             }
             else
             {
                 treeModel = new FileTreeModel(model.workspace.toFile());
+                tree.setCellRenderer(cellRenderer);
                 getTree().setVisible(true);
             }
             getTree().setModel(treeModel);
@@ -83,7 +87,6 @@ public class FileSystemView implements View
         if (tree == null)
         {
             tree = new JTree();
-            tree.setCellRenderer(new TfsTreeCellRenderer());
             tree.setVisible(false);
             tree.addMouseListener(new MouseAdapter()
             {
