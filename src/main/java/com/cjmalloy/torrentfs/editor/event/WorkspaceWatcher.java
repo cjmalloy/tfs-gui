@@ -25,26 +25,31 @@ public class WorkspaceWatcher
 
     private WatchService watcher = null;
     private Thread watchService = null;
+    private Thread waitingThread = null;
     private volatile boolean stop = true;
 
-    public void setWorkspace(final Path workspace)
+    public synchronized void setWorkspace(final Path workspace)
     {
         if (getWatcher() == null) return;
 
-        if (!stop)
+        // Last thread wins
+        waitingThread = Thread.currentThread();
+        notifyAll();
+
+        stop = true;
+        while (watchService != null)
         {
-            stop = true;
             try
             {
-                watchService.join();
+                wait();
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            catch (InterruptedException e) {}
+            if (waitingThread != Thread.currentThread()) return;
         }
 
         stop = false;
+        if (workspace == null) return;
+
         watchService = new Thread()
         {
             @Override
@@ -102,6 +107,14 @@ public class WorkspaceWatcher
                 {
                     e.printStackTrace();
                     return;
+                }
+                finally
+                {
+                    synchronized (WorkspaceWatcher.this)
+                    {
+                        watchService = null;
+                        WorkspaceWatcher.this.notifyAll();
+                    }
                 }
             }
         };
