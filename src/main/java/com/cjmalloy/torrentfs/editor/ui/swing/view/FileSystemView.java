@@ -11,6 +11,7 @@ import javax.swing.tree.TreePath;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
+import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
 import com.cjmalloy.torrentfs.editor.model.FileSystemModel;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.PopupMenu;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.TfsTreeCellRenderer;
@@ -24,6 +25,7 @@ public class FileSystemView implements View
     private JTree tree;
 
     private Path workspace = null;
+    private FileTreeModel treeModel = null;
 
     public FileSystemView()
     {
@@ -41,18 +43,27 @@ public class FileSystemView implements View
     }
 
     @Subscribe
+    public void fileModified(FileModificationEvent event)
+    {
+        if (treeModel != null) treeModel.fileModified(event);
+    }
+
+    @Subscribe
     public void update(FileSystemModel model)
     {
         if (model.workspace != this.workspace)
         {
             if (model.workspace == null)
             {
-                getTree().setModel(null);
+                treeModel = null;
+                getTree().setVisible(false);
             }
             else
             {
-                getTree().setModel(new FileTreeModel(model.workspace.toFile()));
+                treeModel = new FileTreeModel(model.workspace.toFile());
+                getTree().setVisible(true);
             }
+            getTree().setModel(treeModel);
             this.workspace = model.workspace;
         }
     }
@@ -72,7 +83,8 @@ public class FileSystemView implements View
         if (tree == null)
         {
             tree = new JTree();
-            getTree().setCellRenderer(new TfsTreeCellRenderer());
+            tree.setCellRenderer(new TfsTreeCellRenderer());
+            tree.setVisible(false);
             tree.addMouseListener(new MouseAdapter()
             {
                 @Override
