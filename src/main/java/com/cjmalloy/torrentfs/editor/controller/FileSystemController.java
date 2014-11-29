@@ -18,7 +18,7 @@ public class FileSystemController extends Controller<FileSystemModel>
     {
         this.model = model;
 
-        setWorkspace(Paths.get(P.get("tfsLastWorkspace", System.getProperty("user.home"))));
+        setWorkspace(Paths.get(P.get("tfsLastWorkspace", null)));
     }
 
     public void setWorkspace(Path workspace)
