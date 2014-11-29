@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -12,6 +14,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
+import com.cjmalloy.torrentfs.editor.event.FileModificationEvent.FileModification;
 
 /**
  * Model the file system as a tree.
@@ -22,8 +25,7 @@ import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
 public class FileTreeModel implements TreeModel
 {
     private File root;
-    private File lastCreated = null;
-    private File lastDeleted = null;
+    private Map<String, FileModification> eventCache = new HashMap<>();
 
     private List<TreeModelListener> listeners = new ArrayList<>();
 
@@ -41,25 +43,25 @@ public class FileTreeModel implements TreeModel
     public void fileModified(FileModificationEvent event)
     {
         File f = event.file.toFile();
+        String s = f.toString();
         switch (event.type)
         {
         case CREATE:
             // Ignore duplicate events
-            lastDeleted = null;
-            if (lastCreated != null && lastCreated.equals(f)) return;
-            lastCreated = f;
+            if (eventCache.containsKey(s) && eventCache.get(s) != FileModification.DELETE) return;
+            eventCache.put(s, event.type);
 
             fireTreeNodesInserted(f);
             break;
         case DELETE:
             // Ignore duplicate events
-            lastCreated = null;
-            if (lastDeleted != null && lastDeleted.equals(f)) return;
-            lastDeleted = f;
+            if (eventCache.containsKey(s) && eventCache.get(s) == FileModification.DELETE) return;
+            eventCache.put(s, event.type);
 
             fireTreeNodesDeleted(f);
             break;
         case MODIFY:
+            eventCache.put(s, event.type);
             fireTreeNodesChanged(event.file.toFile());
             break;
         }
