@@ -18,13 +18,21 @@ public class FileSystemController extends Controller<FileSystemModel>
     {
         this.model = model;
 
-        setWorkspace(Paths.get(P.get("tfsLastWorkspace", null)));
+        String lastws = P.get("tfsLastWorkspace", null);
+        setWorkspace(lastws == null ? null : Paths.get(lastws));
     }
 
     public void setWorkspace(Path workspace)
     {
         workspaceWatcher.setWorkspace(workspace);
-        P.put("tfsLastWorkspace", workspace.toString());
+        if (workspace == null)
+        {
+            P.remove("tfsLastWorkspace");
+        }
+        else
+        {
+            P.put("tfsLastWorkspace", workspace.toString());
+        }
         model.workspace = workspace;
         update();
     }
