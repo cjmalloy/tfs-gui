@@ -40,7 +40,7 @@ public class MainController extends Controller<MainDocument>
     private static final String CREATOR_ID = "tfs-gui";
     private static final Encoding DEFAULT_ENCODING = Encoding.BENCODE_BASE64;
 
-    private static MainController instance;
+    private static MainController instance = new MainController();
 
     public FileSystemController fileSystem;
     public EditorController editor;
@@ -376,6 +376,8 @@ public class MainController extends Controller<MainDocument>
      */
     public void loadMeta()
     {
+        if (model.fileSystemModel.workspace == null) return;
+
         try
         {
             File rootTfs = Paths.get(model.fileSystemModel.workspace.toString(), ".tfs").toFile();
@@ -639,10 +641,6 @@ public class MainController extends Controller<MainDocument>
 
     public static MainController get()
     {
-        if (instance == null)
-        {
-            instance = new MainController();
-        }
         return instance;
     }
 }
