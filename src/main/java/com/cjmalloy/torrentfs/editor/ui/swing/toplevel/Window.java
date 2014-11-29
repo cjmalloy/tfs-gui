@@ -32,6 +32,7 @@ public class Window implements TopLevel
 
     public Window()
     {
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "tfs-gui");
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
