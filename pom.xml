@@ -1,7 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.cjmalloy</groupId>
+  <parent>
+    <groupId>com.cjmalloy</groupId>
+    <artifactId>cjmalloy</artifactId>
+    <version>0.1</version>
+  </parent>
+
   <artifactId>tfs-gui</artifactId>
   <version>0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -15,26 +20,10 @@
     <tag>master</tag>
   </scm>
 
-  <licenses>
-    <license>
-      <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
-    </license>
-  </licenses>
-
   <issueManagement>
     <system>GitHub</system>
     <url>https://github.com/cjmalloy/tfs-gui/issues</url>
   </issueManagement>
-
-  <developers>
-    <developer>
-      <email>cjmalloy@gmail.com</email>
-      <name>Chris Malloy</name>
-      <url>https://cjmalloy.com</url>
-      <id>cjmalloy</id>
-    </developer>
-  </developers>
 
   <properties>
     <maven.compiler.target>1.7</maven.compiler.target>
@@ -106,12 +95,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>cjmalloy-repo</id>
-      <url>http://cjmalloy.com/m2/libs-snapshot</url>
-    </repository>
-  </repositories>
 </project>
 
