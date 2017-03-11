@@ -1,93 +1,73 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.nio.file.Path;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.ui.swing.HasWidget;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.file.Path;
 
-public class DirSelector implements HasWidget
-{
-    private static final Dimension INPUT_SIZE = new Dimension(300, 30);
 
-    private JPanel widget;
-    private JTextField dirInput;
-    private JButton dirBrowse;
+public class DirSelector implements HasWidget {
+  private static final Dimension INPUT_SIZE = new Dimension(300, 30);
 
-    private String label;
+  private JPanel widget;
+  private JTextField dirInput;
+  private JButton dirBrowse;
 
-    public DirSelector(String label)
-    {
-        this.label = label;
+  private String label;
+
+  public DirSelector(String label) {
+    this.label = label;
+  }
+
+  public String getText() {
+    return getDirInput().getText();
+  }
+
+  @Override
+  public Component getWidget() {
+    if (widget == null) {
+      widget = new JPanel();
+      widget.setLayout(new BoxLayout(widget, BoxLayout.LINE_AXIS));
+      widget.add(new JLabel(label));
+      widget.add(getDirInput());
+      widget.add(getDirBrowse());
     }
+    return widget;
+  }
 
-    public String getText()
-    {
-        return getDirInput().getText();
-    }
+  public void setText(String text) {
+    getDirInput().setText(text);
+  }
 
-    @Override
-    public Component getWidget()
-    {
-        if (widget == null)
-        {
-            widget = new JPanel();
-            widget.setLayout(new BoxLayout(widget, BoxLayout.LINE_AXIS));
-            widget.add(new JLabel(label));
-            widget.add(getDirInput());
-            widget.add(getDirBrowse());
+  private JButton getDirBrowse() {
+    if (dirBrowse == null) {
+      dirBrowse = new JButton("...");
+      dirBrowse.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Controller.EVENT_BUS.post(new DoOpenFolder(new OpenFolderCallback() {
+            @Override
+            public void withFolder(Path folder) {
+              getDirInput().setText(folder.toString());
+            }
+          }));
         }
-        return widget;
+      });
     }
+    return dirBrowse;
+  }
 
-    public void setText(String text)
-    {
-        getDirInput().setText(text);
+  private JTextField getDirInput() {
+    if (dirInput == null) {
+      dirInput = new JTextField();
+      dirInput.setPreferredSize(INPUT_SIZE);
     }
-
-    private JButton getDirBrowse()
-    {
-        if (dirBrowse == null)
-        {
-            dirBrowse = new JButton("...");
-            dirBrowse.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    Controller.EVENT_BUS.post(new DoOpenFolder(new OpenFolderCallback()
-                    {
-                        @Override
-                        public void withFolder(Path folder)
-                        {
-                            getDirInput().setText(folder.toString());
-                        }
-                    }));
-                }
-            });
-        }
-        return dirBrowse;
-    }
-
-    private JTextField getDirInput()
-    {
-        if (dirInput == null)
-        {
-            dirInput = new JTextField();
-            dirInput.setPreferredSize(INPUT_SIZE);
-        }
-        return dirInput;
-    }
+    return dirInput;
+  }
 }

@@ -1,30 +1,26 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
-import java.awt.Frame;
-
-import javax.swing.JFrame;
-
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 
+import javax.swing.*;
+import java.awt.*;
 
-public abstract class Dialog
-{
-    protected Frame parent;
 
-    public Dialog(Frame parent)
-    {
-        this.parent = parent;
-        Controller.EVENT_BUS.register(this);
-    }
+public abstract class Dialog {
+  protected Frame parent;
 
-    public static void loadAllDialogs(JFrame parent)
-    {
-        new OpenFolderDialog(parent);
-        new ExportDialog(parent);
-        new MessageDialog(parent);
-        new ErrorDialog(parent);
-        new ConfirmDialog(parent);
-        new PromptDialog(parent);
-        new ProgressDialog(parent);
-    }
+  public Dialog(Frame parent) {
+    this.parent = parent;
+    Controller.EVENT_BUS.register(this);
+  }
+
+  public static void loadAllDialogs(JFrame parent) {
+    new OpenFolderDialog(parent);
+    new ExportDialog(parent);
+    new MessageDialog(parent);
+    new ErrorDialog(parent);
+    new ConfirmDialog(parent);
+    new PromptDialog(parent);
+    new ProgressDialog(parent);
+  }
 }

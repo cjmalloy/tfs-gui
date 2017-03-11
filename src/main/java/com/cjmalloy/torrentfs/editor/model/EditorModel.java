@@ -5,17 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EditorModel
-{
-    public List<EditorFileModel> openFiles = new ArrayList<>();
-    public int activeFile = -1;
+public class EditorModel {
+  public List<EditorFileModel> openFiles = new ArrayList<>();
+  public int activeFile = -1;
 
-    public EditorFileModel get(File file)
-    {
-        for (EditorFileModel f : openFiles)
-        {
-            if (f.path.equals(file)) return f;
-        }
-        return null;
+  public EditorFileModel get(File file) {
+    for (EditorFileModel f : openFiles) {
+      if (f.path.equals(file)) return f;
     }
+    return null;
+  }
 }

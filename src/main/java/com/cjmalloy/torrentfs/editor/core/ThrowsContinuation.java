@@ -1,7 +1,6 @@
 package com.cjmalloy.torrentfs.editor.core;
 
 
-public interface ThrowsContinuation
-{
-    void next() throws Exception;
+public interface ThrowsContinuation {
+  void next() throws Exception;
 }

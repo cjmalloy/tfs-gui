@@ -1,7 +1,6 @@
 package com.cjmalloy.torrentfs.editor.event;
 
 
-public class DoShutdownNow
-{
+public class DoShutdownNow {
 
 }

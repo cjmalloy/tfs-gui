@@ -5,37 +5,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EditorFileModel
-{
-    public File path;
-    public byte[] contents;
-    public boolean isTfs;
-    public int editMode = 0;
-    public List<Facet> supportedFacets = new ArrayList<>();
-    public List<Property> properties = new ArrayList<>();
-    public boolean editorModified = false;
-    public boolean fileSystemModified = false;
+public class EditorFileModel {
+  public File path;
+  public byte[] contents;
+  public boolean isTfs;
+  public int editMode = 0;
+  public List<Facet> supportedFacets = new ArrayList<>();
+  public List<Property> properties = new ArrayList<>();
+  public boolean editorModified = false;
+  public boolean fileSystemModified = false;
 
-    public EditorFileModel(File path)
-    {
-        this.path = path;
-        isTfs = path.getName().equalsIgnoreCase(".tfs");
-        if (isTfs) supportedFacets.add(Facet.RAW);
-        supportedFacets.add(Facet.PROPERTIES);
-    }
+  public EditorFileModel(File path) {
+    this.path = path;
+    isTfs = path.getName().equalsIgnoreCase(".tfs");
+    if (isTfs) supportedFacets.add(Facet.RAW);
+    supportedFacets.add(Facet.PROPERTIES);
+  }
 
-    public String getTitle()
-    {
-        if (isTfs)
-        {
-            return path.getParentFile().getName() + path.getName();
-        }
-        return path.getName();
+  public String getTitle() {
+    if (isTfs) {
+      return path.getParentFile().getName() + path.getName();
     }
+    return path.getName();
+  }
 
-    public enum Facet
-    {
-        RAW,
-        PROPERTIES;
-    }
+  public enum Facet {
+    RAW,
+    PROPERTIES;
+  }
 }
