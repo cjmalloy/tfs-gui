@@ -26,6 +26,17 @@
     <url>https://github.com/cjmalloy/tfs-gui/issues</url>
   </issueManagement>
 
+  <repositories>
+    <repository>
+      <id>cjmalloy-central</id>
+      <url>http://cjmalloy.com/m2/libs-release</url>
+    </repository>
+    <repository>
+      <id>cjmalloy-repo</id>
+      <url>http://cjmalloy.com/m2/libs-snapshot</url>
+    </repository>
+  </repositories>
+
   <properties>
     <maven.compiler.target>1.7</maven.compiler.target>
     <maven.compiler.source>1.7</maven.compiler.source>
