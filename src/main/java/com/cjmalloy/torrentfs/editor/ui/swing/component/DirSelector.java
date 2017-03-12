@@ -1,15 +1,16 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.file.Path;
+import javax.swing.*;
+
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.ui.swing.HasWidget;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.nio.file.Path;
 
 
 public class DirSelector implements HasWidget {

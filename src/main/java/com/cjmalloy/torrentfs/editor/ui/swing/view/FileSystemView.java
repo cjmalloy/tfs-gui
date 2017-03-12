@@ -1,5 +1,14 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.view;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
+
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
@@ -8,14 +17,6 @@ import com.cjmalloy.torrentfs.editor.ui.swing.component.PopupMenu;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.TfsTreeCellRenderer;
 import com.cjmalloy.torrentfs.editor.ui.swing.model.FileTreeModel;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 public class FileSystemView implements View {

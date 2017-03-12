@@ -1,9 +1,9 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
-import com.cjmalloy.torrentfs.editor.controller.Controller;
+import java.awt.Frame;
+import javax.swing.JFrame;
 
-import javax.swing.*;
-import java.awt.*;
+import com.cjmalloy.torrentfs.editor.controller.Controller;
 
 
 public abstract class Dialog {

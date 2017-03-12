@@ -1,33 +1,29 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
-import com.cjmalloy.torrentfs.editor.core.Continuation;
-import com.cjmalloy.torrentfs.editor.core.ExceptionHandler;
-import com.cjmalloy.torrentfs.editor.core.ThrowsContinuation;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import com.cjmalloy.torrentfs.editor.core.*;
 import com.cjmalloy.torrentfs.editor.event.*;
 import com.cjmalloy.torrentfs.editor.event.DoExport.ExportCallback;
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder.OpenFolderCallback;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
-import com.cjmalloy.torrentfs.editor.ui.MenuItem;
-import com.cjmalloy.torrentfs.editor.ui.Worker;
-import com.cjmalloy.torrentfs.editor.ui.WorkerExecutor;
-import com.cjmalloy.torrentfs.model.Encoding;
-import com.cjmalloy.torrentfs.model.Meta;
-import com.cjmalloy.torrentfs.model.Nested;
+import com.cjmalloy.torrentfs.editor.ui.*;
+import com.cjmalloy.torrentfs.model.*;
 import com.cjmalloy.torrentfs.util.TfsUtil;
 import com.google.common.eventbus.Subscribe;
 import com.turn.ttorrent.common.Torrent;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class MainController extends Controller<MainDocument> {
+
+  private static final Logger logger = LoggerFactory.getLogger(MainController.class);
   private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
 
   private static final String CREATOR_ID = "tfs-gui";
@@ -118,7 +114,7 @@ public class MainController extends Controller<MainDocument> {
         EVENT_BUS.post(new DoExport(new ExportCallback() {
           @Override
           public void withSettings(ExportSettings settings) {
-            export(settings);
+            exportWithSettings(settings);
           }
         }));
       }
@@ -211,7 +207,7 @@ public class MainController extends Controller<MainDocument> {
    */
   public Nested getNested(File f) throws IOException {
     if (model.metadata == null) return null;
-    return getNested(model.fileSystemModel.workspace.toFile(), model.metadata, f);
+    return getNestedFromRoot(model.fileSystemModel.workspace.toFile(), model.metadata, f);
   }
 
   /**
@@ -220,7 +216,7 @@ public class MainController extends Controller<MainDocument> {
    */
   public Nested getParentNested(File f) throws IOException {
     if (model.metadata == null) return null;
-    return getParentNested(model.fileSystemModel.workspace.toFile(), model.metadata, f);
+    return getParentNestedFromRoot(model.fileSystemModel.workspace.toFile(), model.metadata, f);
   }
 
   /**
@@ -234,6 +230,7 @@ public class MainController extends Controller<MainDocument> {
         f = f.getParentFile();
       }
     } catch (IOException e) {
+      logger.warn(e.getMessage());
     }
     return false;
   }
@@ -242,8 +239,8 @@ public class MainController extends Controller<MainDocument> {
    * Check if this folder is a torrent mount point.
    */
   public boolean isMountPoint(File f) throws IOException {
-    return f.equals(model.fileSystemModel.workspace.toFile()) ||
-      isNested(f);
+    return f.equals(model.fileSystemModel.workspace.toFile())
+      || isNested(f);
   }
 
   /**
@@ -262,9 +259,9 @@ public class MainController extends Controller<MainDocument> {
    */
   public boolean isTfs(File f) {
     try {
-      return f.exists() &&
-        f.toString().endsWith(".tfs") &&
-        isMountPoint(f.getParentFile());
+      return f.exists()
+        && f.toString().endsWith(".tfs")
+        && isMountPoint(f.getParentFile());
     } catch (IOException e) {
       return false;
     }
@@ -291,7 +288,7 @@ public class MainController extends Controller<MainDocument> {
       }
 
       model.metadata = Meta.load(rootTfs);
-      loadMeta(model.fileSystemModel.workspace.toFile(), model.metadata);
+      loadMetaFromRoot(model.fileSystemModel.workspace.toFile(), model.metadata);
     } catch (IOException e) {
       Controller.EVENT_BUS.post(new DoMessage(R.getString("errorAccessingFilesystem") + e.getLocalizedMessage()));
     }
@@ -324,7 +321,7 @@ public class MainController extends Controller<MainDocument> {
         EVENT_BUS.post(new DoOpenFolder(new OpenFolderCallback() {
           @Override
           public void withFolder(Path folder) {
-            open(folder);
+            openWorkspace(folder);
           }
         }));
       }
@@ -367,10 +364,10 @@ public class MainController extends Controller<MainDocument> {
   }
 
   public void writeMeta() throws IOException {
-    writeMeta(model.fileSystemModel.workspace.toFile(), model.metadata);
+    writeMetaToFile(model.fileSystemModel.workspace.toFile(), model.metadata);
   }
 
-  private void export(final ExportSettings settings) {
+  private void exportWithSettings(final ExportSettings settings) {
     if (!settings.valid()) {
       EVENT_BUS.post(new DoErrorMessage(R.getString("errorInvalidExportSettings")));
       return;
@@ -385,12 +382,12 @@ public class MainController extends Controller<MainDocument> {
         try {
           context.publish(0.1);
           List<Torrent> torrents = TfsUtil.generateTorrentFromTfs(
-            fileSystem.model.workspace.toFile(),
-            Encoding.BENCODE_BASE64,
-            settings.getAnnounce(),
-            CREATOR_ID,
-            settings.cache,
-            settings.useLinks
+              fileSystem.model.workspace.toFile(),
+              Encoding.BENCODE_BASE64,
+              settings.getAnnounce(),
+              CREATOR_ID,
+              settings.cache,
+              settings.useLinks
           );
           context.publish(0.5);
           TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
@@ -415,7 +412,7 @@ public class MainController extends Controller<MainDocument> {
     });
   }
 
-  private Nested getNested(File metaRoot, Meta meta, File f) throws IOException {
+  private Nested getNestedFromRoot(File metaRoot, Meta meta, File f) throws IOException {
     if (meta.nested == null) return null;
 
     // Breadth-first search
@@ -425,30 +422,31 @@ public class MainController extends Controller<MainDocument> {
     for (Nested n : meta.nested) {
       if (n.meta == null) continue;
 
-      Nested result = getNested(Paths.get(metaRoot.toString(), n.mount).toFile(), n.meta, f);
+      Nested result = getNestedFromRoot(Paths.get(metaRoot.toString(), n.mount).toFile(), n.meta, f);
       if (result != null) return result;
     }
     return null;
   }
 
-  private Nested getParentNested(File metaRoot, Meta meta, File f) throws IOException {
+  private Nested getParentNestedFromRoot(File metaRoot, Meta meta, File f) throws IOException {
     if (!f.toString().startsWith(metaRoot.toString())) return null;
     if (meta.nested == null) return null;
 
     for (Nested n : meta.nested) {
-      if (!f.toString().startsWith(Paths.get(metaRoot.toString(), n.mount).toFile().getCanonicalFile().toString()))
+      if (!f.toString().startsWith(Paths.get(metaRoot.toString(), n.mount).toFile().getCanonicalFile().toString())) {
         continue;
+      }
 
       if (n.meta == null) return n;
 
-      Nested result = getParentNested(Paths.get(metaRoot.toString(), n.mount).toFile(), n.meta, f);
+      Nested result = getParentNestedFromRoot(Paths.get(metaRoot.toString(), n.mount).toFile(), n.meta, f);
       if (result != null) return result;
       return n;
     }
     return null;
   }
 
-  private void loadMeta(File metaRoot, Meta meta) throws IllegalStateException, IOException {
+  private void loadMetaFromRoot(File metaRoot, Meta meta) throws IllegalStateException, IOException {
     if (meta.nested == null) return;
 
     for (Nested n : meta.nested) {
@@ -456,14 +454,14 @@ public class MainController extends Controller<MainDocument> {
       n.meta = loadTfs(n);
       if (n.meta == null) continue;
 
-      loadMeta(n.absolutePath, n.meta);
+      loadMetaFromRoot(n.absolutePath, n.meta);
     }
   }
 
   /**
    * Change the current workspace.
    */
-  private void open(Path workspace) {
+  private void openWorkspace(Path workspace) {
     editor.closeAll();
     fileSystem.setWorkspace(workspace);
     loadMeta();
@@ -490,7 +488,7 @@ public class MainController extends Controller<MainDocument> {
     child.meta.nested.addAll(toMove);
   }
 
-  private void writeMeta(File f, Meta meta) throws IOException {
+  private void writeMetaToFile(File f, Meta meta) throws IOException {
     if (meta == null) return;
 
     TfsUtil.writeTfs(Paths.get(f.toString(), ".tfs").toFile(), meta);
@@ -498,7 +496,7 @@ public class MainController extends Controller<MainDocument> {
 
     for (Nested n : meta.nested) {
       if (n.meta == null) continue;
-      writeMeta(n.absolutePath, n.meta);
+      writeMetaToFile(n.absolutePath, n.meta);
     }
   }
 

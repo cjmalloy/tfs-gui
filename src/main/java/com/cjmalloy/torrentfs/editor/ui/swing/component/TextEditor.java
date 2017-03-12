@@ -1,17 +1,18 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.event.DoFlushFile;
 import com.cjmalloy.torrentfs.editor.event.RefreshFileEvent;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.io.IOException;
-import java.nio.charset.Charset;
 
 
 public class TextEditor implements FacetEditor {

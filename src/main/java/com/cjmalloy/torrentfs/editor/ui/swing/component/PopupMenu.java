@@ -1,12 +1,13 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
-import com.cjmalloy.torrentfs.editor.ui.MenuItem;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
+import com.cjmalloy.torrentfs.editor.ui.MenuItem;
 
 
 public class PopupMenu {

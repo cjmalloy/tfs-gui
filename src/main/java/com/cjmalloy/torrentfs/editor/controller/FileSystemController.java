@@ -1,11 +1,11 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
-import com.cjmalloy.torrentfs.editor.event.WorkspaceWatcher;
-import com.cjmalloy.torrentfs.editor.model.FileSystemModel;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
+
+import com.cjmalloy.torrentfs.editor.event.WorkspaceWatcher;
+import com.cjmalloy.torrentfs.editor.model.FileSystemModel;
 
 
 public class FileSystemController extends Controller<FileSystemModel> {

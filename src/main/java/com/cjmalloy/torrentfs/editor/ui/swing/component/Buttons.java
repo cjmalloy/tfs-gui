@@ -1,11 +1,11 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
+import java.awt.Insets;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
 import com.cjmalloy.torrentfs.editor.ui.swing.HasWidget;
 import com.cjmalloy.torrentfs.editor.ui.swing.layoutmanager.ButtonAreaLayout;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
 
 
 public abstract class Buttons implements HasWidget {

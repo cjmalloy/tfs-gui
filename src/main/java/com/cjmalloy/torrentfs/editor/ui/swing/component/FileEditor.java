@@ -1,20 +1,16 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
-import com.cjmalloy.torrentfs.editor.controller.Controller;
-import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
-import com.cjmalloy.torrentfs.editor.controller.MainController;
+import java.io.IOException;
+import java.util.*;
+import javax.swing.JTabbedPane;
+
+import com.cjmalloy.torrentfs.editor.controller.*;
 import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel.Facet;
 import com.cjmalloy.torrentfs.editor.ui.swing.HasWidget;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.FacetEditor.FileEditorFactory;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
 
 public class FileEditor implements HasWidget {

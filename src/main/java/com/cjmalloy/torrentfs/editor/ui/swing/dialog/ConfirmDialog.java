@@ -1,9 +1,10 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import com.cjmalloy.torrentfs.editor.event.DoConfirm;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
 
 
 public class ConfirmDialog extends Dialog {

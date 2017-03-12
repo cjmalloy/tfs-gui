@@ -1,12 +1,12 @@
 package com.cjmalloy.torrentfs.editor.ui.swing;
 
+import java.util.List;
+import javax.swing.SwingWorker;
+
 import com.cjmalloy.torrentfs.editor.ui.Worker;
 import com.cjmalloy.torrentfs.editor.ui.Worker.WorkerContext;
 import com.cjmalloy.torrentfs.editor.ui.WorkerExecutor;
 import com.google.inject.Singleton;
-
-import javax.swing.*;
-import java.util.List;
 
 @Singleton
 public class SwingWorkerExecutor extends WorkerExecutor {

@@ -1,13 +1,13 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
+import java.awt.Component;
+import java.io.File;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.ui.swing.model.FileTreeModel.TreeFile;
 import com.cjmalloy.torrentfs.editor.ui.swing.skin.IconBundle;
-
-import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
-import java.io.File;
 
 
 @SuppressWarnings("serial")
@@ -19,7 +19,8 @@ public class TfsTreeCellRenderer extends DefaultTreeCellRenderer {
   }
 
   @Override
-  public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+  public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row,
+                                                boolean hasFocus) {
     super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     if (!(value instanceof TreeFile)) return this;
 

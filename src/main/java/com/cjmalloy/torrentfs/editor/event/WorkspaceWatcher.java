@@ -1,14 +1,16 @@
 package com.cjmalloy.torrentfs.editor.event;
 
-import com.cjmalloy.torrentfs.editor.controller.Controller;
-import com.cjmalloy.torrentfs.editor.event.FileModificationEvent.FileModification;
-import com.cjmalloy.torrentfs.editor.ui.UiUtils;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.TimeUnit;
+
+import com.cjmalloy.torrentfs.editor.controller.Controller;
+import com.cjmalloy.torrentfs.editor.event.FileModificationEvent.FileModification;
+import com.cjmalloy.torrentfs.editor.ui.UiUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class WorkspaceWatcher {
@@ -31,6 +33,7 @@ public class WorkspaceWatcher {
       try {
         wait();
       } catch (InterruptedException e) {
+        // wake up
       }
       if (waitingThread != Thread.currentThread()) return;
     }
@@ -109,13 +112,13 @@ public class WorkspaceWatcher {
   }
 
   /**
-   * Register the given directory with the WatchService
+   * Register the given directory with the WatchService.
    */
   private void register(Path dir) throws IOException {
     dir.register(watcher,
-      StandardWatchEventKinds.ENTRY_CREATE,
-      StandardWatchEventKinds.ENTRY_DELETE,
-      StandardWatchEventKinds.ENTRY_MODIFY);
+        StandardWatchEventKinds.ENTRY_CREATE,
+        StandardWatchEventKinds.ENTRY_DELETE,
+        StandardWatchEventKinds.ENTRY_MODIFY);
   }
 
   /**

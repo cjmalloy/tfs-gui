@@ -1,5 +1,9 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
 import com.cjmalloy.torrentfs.editor.core.Continuation;
 import com.cjmalloy.torrentfs.editor.event.*;
 import com.cjmalloy.torrentfs.editor.event.DoConfirm.ConfirmCallback;
@@ -8,12 +12,6 @@ import com.cjmalloy.torrentfs.editor.event.FlushFileEvent.FlushListener;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorModel;
 import com.google.common.eventbus.Subscribe;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
 
 public class EditorController extends Controller<EditorModel> {

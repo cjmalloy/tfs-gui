@@ -1,15 +1,16 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
-import com.cjmalloy.torrentfs.editor.model.ExportSettings;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
+import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 
 
 public class ExportSettingsComponent implements SettingsComponent<ExportSettings> {

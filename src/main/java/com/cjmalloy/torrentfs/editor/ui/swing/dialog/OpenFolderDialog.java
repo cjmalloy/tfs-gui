@@ -1,10 +1,11 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import com.cjmalloy.torrentfs.editor.event.DoOpenFolder;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import java.io.File;
 
 
 public class OpenFolderDialog extends Dialog {

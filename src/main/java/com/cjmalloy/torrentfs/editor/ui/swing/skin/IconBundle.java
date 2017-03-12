@@ -1,6 +1,6 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.skin;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
 
 
 public class IconBundle {

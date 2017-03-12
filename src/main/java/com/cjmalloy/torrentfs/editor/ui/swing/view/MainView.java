@@ -1,16 +1,16 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.view;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
+import javax.swing.*;
+
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
 import com.cjmalloy.torrentfs.editor.ui.swing.skin.IconBundle;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ResourceBundle;
 
 
 public class MainView implements View {

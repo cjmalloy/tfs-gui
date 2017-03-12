@@ -1,12 +1,13 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
+import java.util.ResourceBundle;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import com.cjmalloy.torrentfs.editor.event.DoExport;
 import com.cjmalloy.torrentfs.editor.model.ExportSettings;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.ExportSettingsComponent;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import java.util.ResourceBundle;
 
 
 public class ExportDialog extends Dialog {

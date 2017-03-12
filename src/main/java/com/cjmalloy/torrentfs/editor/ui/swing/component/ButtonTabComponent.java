@@ -1,16 +1,14 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
-import com.cjmalloy.torrentfs.editor.ui.swing.HasWidget;
-
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
+import com.cjmalloy.torrentfs.editor.ui.swing.HasWidget;
 
 /**
- * Component to be used as tabComponent; Contains a JLabel to show the text and
+ * Component to be used as tabComponent. Contains a JLabel to show the text and
  * a JButton to close the tab it belongs to
  */
 @SuppressWarnings("serial")
@@ -24,8 +22,6 @@ public class ButtonTabComponent implements HasWidget {
     this.parent = parent;
     getButton().addActionListener(l);
   }
-
-  ;
 
   public JPanel getWidget() {
     if (widget == null) {

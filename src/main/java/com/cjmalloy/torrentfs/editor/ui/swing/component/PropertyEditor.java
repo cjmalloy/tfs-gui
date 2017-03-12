@@ -1,5 +1,11 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
+import java.awt.BorderLayout;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.EditorFileController;
 import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
@@ -7,12 +13,6 @@ import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.Property;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.SettingsComponent.SettingsComponentFactory;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class PropertyEditor implements FacetEditor {

@@ -1,12 +1,10 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
-import com.cjmalloy.torrentfs.editor.event.ProgressEndEvent;
-import com.cjmalloy.torrentfs.editor.event.ProgressStartEvent;
-import com.cjmalloy.torrentfs.editor.event.ProgressUpdateEvent;
-import com.google.common.eventbus.Subscribe;
+import java.awt.Frame;
+import javax.swing.ProgressMonitor;
 
-import javax.swing.*;
-import java.awt.*;
+import com.cjmalloy.torrentfs.editor.event.*;
+import com.google.common.eventbus.Subscribe;
 
 
 public class ProgressDialog extends Dialog {

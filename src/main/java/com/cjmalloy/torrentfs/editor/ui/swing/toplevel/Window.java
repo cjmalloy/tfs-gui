@@ -1,5 +1,12 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.toplevel;
 
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ResourceBundle;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.event.DoShutdownNow;
@@ -8,15 +15,12 @@ import com.cjmalloy.torrentfs.editor.ui.swing.dialog.Dialog;
 import com.cjmalloy.torrentfs.editor.ui.swing.view.MainView;
 import com.cjmalloy.torrentfs.editor.ui.swing.view.View;
 import com.google.common.eventbus.Subscribe;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ResourceBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Window implements TopLevel {
+  private static final Logger logger = LoggerFactory.getLogger(Window.class);
   private static final ResourceBundle R = ResourceBundle.getBundle("com.cjmalloy.torrentfs.editor.i18n.MessageBundle");
   private static final Dimension INITIAL_SIZE = new Dimension(800, 600);
 
@@ -24,7 +28,7 @@ public class Window implements TopLevel {
   private View view = null;
 
   private Thread t;
-  private Object lock = new Object();
+  private final Object lock = new Object();
   private boolean exitNow = false;
 
   public Window() {
@@ -32,6 +36,7 @@ public class Window implements TopLevel {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (Throwable e) {
+      logger.warn(e.getMessage());
     }
 
     frame.setTitle(R.getString("windowTitle"));
@@ -43,10 +48,12 @@ public class Window implements TopLevel {
       @Override
       public void run() {
         synchronized (lock) {
-          while (!exitNow) try {
-            lock.wait();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+          while (!exitNow) {
+            try {
+              lock.wait();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
           }
         }
       }

@@ -1,8 +1,8 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.component;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.UIManager;
 
 
 public class OkCancelButtons extends Buttons {
@@ -21,8 +21,7 @@ public class OkCancelButtons extends Buttons {
 
   @Override
   protected Button[] getButtons() {
-    return new Button[]
-      {
+    return new Button[] {
         new Button(UIManager.getString("OptionPane.okButtonText"), new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -35,7 +34,7 @@ public class OkCancelButtons extends Buttons {
             delegate.onCancel();
           }
         })
-      };
+    };
   }
 
   public static interface OkCancelDelegate {

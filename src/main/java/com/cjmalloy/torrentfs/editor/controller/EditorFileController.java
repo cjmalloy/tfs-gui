@@ -1,16 +1,12 @@
 package com.cjmalloy.torrentfs.editor.controller;
 
-import com.cjmalloy.torrentfs.editor.event.DoFlushFile;
-import com.cjmalloy.torrentfs.editor.event.FlushFileEvent;
-import com.cjmalloy.torrentfs.editor.event.RefreshFileEvent;
-import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
-import org.apache.commons.io.IOUtils;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+
+import com.cjmalloy.torrentfs.editor.event.*;
+import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
+import org.apache.commons.io.IOUtils;
 
 
 public class EditorFileController extends Controller<EditorFileModel> {
@@ -58,9 +54,9 @@ public class EditorFileController extends Controller<EditorFileModel> {
     try {
       inf = new FileInputStream(model.path);
       byte[] fileContents = IOUtils.toByteArray(inf);
-      if (!model.fileSystemModified &&
-        model.contents != null &&
-        !Arrays.equals(model.contents, fileContents)) {
+      if (!model.fileSystemModified
+          && model.contents != null
+          && !Arrays.equals(model.contents, fileContents)) {
         model.fileSystemModified = true;
       }
       model.contents = fileContents;

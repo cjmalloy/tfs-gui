@@ -1,6 +1,6 @@
 package com.cjmalloy.torrentfs.editor.ui.swing;
 
-import java.awt.*;
+import java.awt.Component;
 
 
 public interface HasWidget {

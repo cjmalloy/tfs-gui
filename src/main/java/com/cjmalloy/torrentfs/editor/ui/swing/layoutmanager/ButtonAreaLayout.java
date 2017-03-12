@@ -1,18 +1,19 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.layoutmanager;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.SwingConstants;
 
 /**
  * <code>ButtonAreaLayout</code> behaves in a similar manner to
  * <code>FlowLayout</code>. It lays out all components from left to
  * right. If <code>syncAllWidths</code> is true, the widths of each
  * component will be set to the largest preferred size width.
- * <p>
- * This class should be treated as a &quot;protected&quot; inner class.
+ *
+ * <p>This class should be treated as a &quot;protected&quot; inner class.
  * Instantiate it only within subclasses of {@code BasicOptionPaneUI}.
  */
 public class ButtonAreaLayout implements LayoutManager {
+
   protected boolean syncAllWidths;
   protected int padding;
   /**
@@ -35,8 +36,7 @@ public class ButtonAreaLayout implements LayoutManager {
     useOrientation = false;
   }
 
-  public ButtonAreaLayout(boolean syncAllSizes, int padding, int orientation,
-                          boolean reverseButtons) {
+  public ButtonAreaLayout(boolean syncAllSizes, int padding, int orientation, boolean reverseButtons) {
     this(syncAllSizes, padding);
     useOrientation = true;
     this.orientation = orientation;
@@ -100,9 +100,8 @@ public class ButtonAreaLayout implements LayoutManager {
       int totalButtonWidth = 0;
       int x = 0;
       int xOffset = 0;
-      boolean ltr = container.getComponentOrientation().
-        isLeftToRight();
-      boolean reverse = (ltr) ? reverseButtons : !reverseButtons;
+      boolean ltr = container.getComponentOrientation().isLeftToRight();
+      boolean reverse = ltr == reverseButtons;
 
       for (int counter = 0; counter < numChildren; counter++) {
         Dimension pref = children[counter].getPreferredSize();
@@ -128,29 +127,26 @@ public class ButtonAreaLayout implements LayoutManager {
           } else {
             x = insets.left;
             if (getSyncAllWidths()) {
-              xOffset = (container.getWidth() - insets.left -
-                insets.right - totalButtonWidth) /
-                (numChildren - 1) + maxWidth;
+              xOffset = (container.getWidth() - insets.left
+                - insets.right - totalButtonWidth)
+                / (numChildren - 1) + maxWidth;
             } else {
-              xOffset = (container.getWidth() - insets.left -
-                insets.right - totalButtonWidth) /
-                (numChildren - 1);
+              xOffset = (container.getWidth() - insets.left
+                - insets.right - totalButtonWidth)
+                / (numChildren - 1);
             }
           }
           break;
       }
 
       for (int counter = 0; counter < numChildren; counter++) {
-        int index = (reverse) ? numChildren - counter - 1 :
-          counter;
+        int index = (reverse) ? numChildren - counter - 1 : counter;
         Dimension pref = children[index].getPreferredSize();
 
         if (getSyncAllWidths()) {
-          children[index].setBounds(x, insets.top,
-            maxWidth, maxHeight);
+          children[index].setBounds(x, insets.top, maxWidth, maxHeight);
         } else {
-          children[index].setBounds(x, insets.top, pref.width,
-            pref.height);
+          children[index].setBounds(x, insets.top, pref.width, pref.height);
         }
         if (xOffset != 0) {
           x += xOffset;
@@ -181,8 +177,8 @@ public class ButtonAreaLayout implements LayoutManager {
             height = Math.max(height, aSize.height);
             maxWidth = Math.max(maxWidth, aSize.width);
           }
-          return new Dimension(extraWidth + (maxWidth * numChildren) +
-            (numChildren - 1) * padding,
+          return new Dimension(extraWidth + (maxWidth * numChildren)
+            + (numChildren - 1) * padding,
             extraHeight + height);
         } else {
           int totalWidth = 0;

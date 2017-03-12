@@ -1,13 +1,14 @@
 package com.cjmalloy.torrentfs.editor.ui.swing.dialog;
 
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.*;
+
 import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons.OkCancelDelegate;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.SettingsComponent;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 
 public class SettingsDialog<T> {
