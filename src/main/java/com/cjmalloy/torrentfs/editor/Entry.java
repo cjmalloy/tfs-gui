@@ -12,7 +12,7 @@ import jargs.gnu.CmdLineParser;
 
 public class Entry {
 
-  private static final String defaultUi = "swing";
+  private static final String defaultUi = "fx";
 
   /**
    * Display program usage on the given {@link PrintStream}.

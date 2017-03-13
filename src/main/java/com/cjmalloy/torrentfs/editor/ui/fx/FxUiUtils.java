@@ -1,10 +1,9 @@
 package com.cjmalloy.torrentfs.editor.ui.fx;
 
-import javax.swing.SwingUtilities;
+import javafx.application.Platform;
 
 import com.cjmalloy.torrentfs.editor.ui.UiUtils;
 import com.google.inject.Singleton;
-import javafx.application.Platform;
 
 @Singleton
 public class FxUiUtils extends UiUtils {

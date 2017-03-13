@@ -1,10 +1,11 @@
 package com.cjmalloy.torrentfs.editor.ui.fx;
 
+import javafx.concurrent.Task;
+
 import com.cjmalloy.torrentfs.editor.ui.Worker;
 import com.cjmalloy.torrentfs.editor.ui.Worker.WorkerContext;
 import com.cjmalloy.torrentfs.editor.ui.WorkerExecutor;
 import com.google.inject.Singleton;
-import javafx.concurrent.Task;
 
 @Singleton
 public class FxWorkerExecutor extends WorkerExecutor {
