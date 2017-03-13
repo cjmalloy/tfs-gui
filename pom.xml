@@ -35,6 +35,12 @@
       <id>cjmalloy-repo</id>
       <url>http://cjmalloy.com/m2/libs-snapshot</url>
     </repository>
+
+    <repository>
+      <id>jboss-thirdparty-releases</id>
+      <name>JBoss Thirdparty Releases</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
+    </repository>
   </repositories>
 
   <properties>
