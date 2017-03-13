@@ -99,7 +99,6 @@ public class EditorController extends Controller<EditorModel> {
    * If the user cancels then then continuation will be ignored.
    *
    * @param f  the file to close
-   * @param ct the continuation to call if the user does not cancel
    */
   public void maybeClose(final EditorFileModel f) {
     saveCancelContinue(f, new Continuation() {
