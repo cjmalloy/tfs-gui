@@ -376,11 +376,11 @@ public class MainController extends Controller<MainDocument> {
     ignoreFsUpdates = true;
 
     EVENT_BUS.post(new ProgressStartEvent());
-    WorkerExecutor.get().execute(new Worker<Void, Double>() {
+    WorkerExecutor.get().execute(new Worker<Void>() {
       @Override
-      public Void doInBackground(WorkerContext<Void, Double> context) throws Exception {
+      public Void doInBackground(WorkerContext context) throws Exception {
         try {
-          context.publish(0.1);
+          context.updateProgress(0.1);
           List<Torrent> torrents = TfsUtil.generateTorrentFromTfs(
               fileSystem.model.workspace.toFile(),
               Encoding.BENCODE_BASE64,
@@ -389,7 +389,7 @@ public class MainController extends Controller<MainDocument> {
               settings.cache,
               settings.useLinks
           );
-          context.publish(0.5);
+          context.updateProgress(0.5);
           TfsUtil.saveTorrents(settings.torrentSaveDir, torrents);
         } catch (Exception e) {
           e.printStackTrace();
@@ -398,7 +398,7 @@ public class MainController extends Controller<MainDocument> {
       }
 
       @Override
-      public void done(WorkerContext<Void, Double> context) {
+      public void done(WorkerContext context) {
         EVENT_BUS.post(new ProgressEndEvent());
         EVENT_BUS.post(new DoMessage("done!"));
         ignoreFsUpdates = false;
@@ -406,8 +406,8 @@ public class MainController extends Controller<MainDocument> {
       }
 
       @Override
-      public void process(WorkerContext<Void, Double> context, List<Double> chunks) {
-        EVENT_BUS.post(new ProgressUpdateEvent(chunks.get(0)));
+      public void updateProgress(WorkerContext context, double progress) {
+        EVENT_BUS.post(new ProgressUpdateEvent(progress));
       }
     });
   }

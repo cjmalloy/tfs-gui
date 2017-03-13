@@ -15,18 +15,19 @@ public class SwingWorkerExecutor extends WorkerExecutor {
   }
 
   @Override
-  public <T, V> WorkerContext<T, V> execute(Worker<T, V> worker) {
-    SwingWorkerImpl<T, V> w = new SwingWorkerImpl<T, V>(worker);
+  public <T> WorkerContext execute(Worker<T> worker) {
+    SwingWorkerImpl<T> w = new SwingWorkerImpl<>(worker);
     w.execute();
     return w.getContext();
   }
 
-  private static class SwingWorkerImpl<T, V> extends SwingWorker<T, V> {
-    private WorkerContext<T, V> context = new WorkerContext<T, V>() {
+  private static class SwingWorkerImpl<T> extends SwingWorker<T, Double> {
+
+    private WorkerContext context = new WorkerContext() {
+
       @Override
-      @SafeVarargs
-      public final void publish(V... chunks) {
-        SwingWorkerImpl.this.publish(chunks);
+      public final void updateProgress(double p) {
+        SwingWorkerImpl.this.publish(p);
       }
 
       @Override
@@ -40,13 +41,13 @@ public class SwingWorkerExecutor extends WorkerExecutor {
       }
     };
 
-    private Worker<T, V> worker;
+    private Worker<T> worker;
 
-    public SwingWorkerImpl(Worker<T, V> worker) {
+    SwingWorkerImpl(Worker<T> worker) {
       this.worker = worker;
     }
 
-    public WorkerContext<T, V> getContext() {
+    WorkerContext getContext() {
       return context;
     }
 
@@ -56,8 +57,8 @@ public class SwingWorkerExecutor extends WorkerExecutor {
     }
 
     @Override
-    protected void process(List<V> chunks) {
-      worker.process(context, chunks);
+    protected void process(List<Double> chunks) {
+      worker.updateProgress(context, chunks.get(chunks.size() - 1));
     }
 
     @Override

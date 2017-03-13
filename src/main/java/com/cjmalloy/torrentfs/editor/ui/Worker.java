@@ -3,16 +3,16 @@ package com.cjmalloy.torrentfs.editor.ui;
 import java.util.List;
 
 
-public interface Worker<T, V> {
-  T doInBackground(WorkerContext<T, V> context) throws Exception;
+public interface Worker<T> {
+  T doInBackground(WorkerContext context) throws Exception;
 
-  void process(WorkerContext<T, V> context, List<V> chunks);
+  void updateProgress(WorkerContext context, double progress);
 
-  void done(WorkerContext<T, V> context);
+  void done(WorkerContext context);
 
-  public interface WorkerContext<T, V> {
-    @SuppressWarnings("unchecked")
-    void publish(V... chunks);
+  interface WorkerContext {
+
+    void updateProgress(double progress);
 
     void cancel(boolean mayInterruptIfRunning);
 

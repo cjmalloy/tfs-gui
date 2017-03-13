@@ -6,7 +6,7 @@ import com.cjmalloy.torrentfs.editor.ui.Worker.WorkerContext;
 public abstract class WorkerExecutor {
   protected static WorkerExecutor INSTANCE;
 
-  public abstract <T, V> WorkerContext<T, V> execute(Worker<T, V> worker);
+  public abstract <T> WorkerContext execute(Worker<T> worker);
 
   public static WorkerExecutor get() {
     return INSTANCE;
