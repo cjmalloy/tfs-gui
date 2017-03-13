@@ -1,21 +1,24 @@
 package com.cjmalloy.torrentfs.editor.ui.fx.dialog;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Window;
-import javax.swing.JOptionPane;
 
 import com.cjmalloy.torrentfs.editor.event.DoErrorMessage;
-import com.cjmalloy.torrentfs.editor.ui.swing.dialog.Dialog;
 import com.google.common.eventbus.Subscribe;
 
 
-public class ErrorDialog extends Dialog {
+public class ErrorDialog extends TfsDialog {
   public ErrorDialog(Window parent) {
     super(parent);
   }
 
   @Subscribe
   public void setMessage(DoErrorMessage event) {
-    JOptionPane.showMessageDialog(parent, event.msg, "", JOptionPane.ERROR_MESSAGE);
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setContentText(event.msg);
+
+    alert.showAndWait();
     event.ct.next();
   }
 }

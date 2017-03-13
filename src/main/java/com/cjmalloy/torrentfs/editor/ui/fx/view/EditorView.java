@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
@@ -28,11 +29,17 @@ public class EditorView implements View {
   }
 
   public Scene getScene() {
-    if (tabs == null) {
-      tabs = new TabPane();
-      scene = new Scene(tabs);
+    if (scene == null) {
+      scene = new Scene(getWidget());
     }
     return scene;
+  }
+
+  public TabPane getWidget() {
+    if (tabs == null) {
+      tabs = new TabPane();
+    }
+    return tabs;
   }
 
   @Subscribe
@@ -43,9 +50,9 @@ public class EditorView implements View {
       FileEditor e = new FileEditor(f);
       files.add(f);
       fileEditors.add(e);
-      getScene().addTab(f.getTitle(), e.getWidget());
+      getWidget().getTabs().add(new Tab(f.getTitle(), e.getWidget()));
       final EditorFileModel _f = f;
-      getScene().setTabComponentAt(getScene().getTabCount() - 1, new ButtonTabComponent(getScene(),
+      getWidget().setTabComponentAt(getWidget().getTabCount() - 1, new ButtonTabComponent(getWidget(),
           new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -61,12 +68,12 @@ public class EditorView implements View {
       e.close();
       fileEditors.remove(i);
       files.remove(i);
-      getScene().remove(e.getWidget());
+      getWidget().remove(e.getWidget());
     }
 
     if (currentEditor != model.activeFile) {
       currentEditor = model.activeFile;
-      getScene().setSelectedIndex(currentEditor);
+      getWidget().setSelectedIndex(currentEditor);
     }
   }
 }

@@ -5,10 +5,10 @@ import javafx.stage.Window;
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 
 
-public abstract class Dialog {
+public abstract class TfsDialog {
   protected Window parent;
 
-  public Dialog(Window parent) {
+  public TfsDialog(Window parent) {
     this.parent = parent;
     Controller.EVENT_BUS.register(this);
   }

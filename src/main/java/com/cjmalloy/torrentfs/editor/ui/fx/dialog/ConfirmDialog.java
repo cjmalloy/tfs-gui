@@ -1,31 +1,39 @@
 package com.cjmalloy.torrentfs.editor.ui.fx.dialog;
 
+import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Window;
-import javax.swing.JOptionPane;
 
 import com.cjmalloy.torrentfs.editor.event.DoConfirm;
 import com.google.common.eventbus.Subscribe;
 
 
-public class ConfirmDialog extends Dialog {
+public class ConfirmDialog extends TfsDialog {
   public ConfirmDialog(Window parent) {
     super(parent);
   }
 
   @Subscribe
   public void setMessage(DoConfirm event) {
-    int returnVal = JOptionPane.showConfirmDialog(parent, event.msg);
-    switch (returnVal) {
-      case JOptionPane.YES_OPTION:
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Current project is modified");
+    alert.setContentText("Save?");
+    ButtonType okButton = new ButtonType("Yes", ButtonData.YES);
+    ButtonType noButton = new ButtonType("No", ButtonData.NO);
+    ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+    alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+
+    Optional<ButtonType> result = alert.showAndWait();
+    if (result.isPresent()) {
+      if (result.get() == okButton) {
         event.callback.onYes();
-        break;
-      case JOptionPane.NO_OPTION:
+      } else {
         event.callback.onNo();
-        break;
-      case JOptionPane.CANCEL_OPTION:
-      case JOptionPane.CLOSED_OPTION:
-        event.callback.onCancel();
-        break;
+      }
+    } else {
+      event.callback.onCancel();
     }
   }
 }

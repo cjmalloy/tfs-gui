@@ -1,11 +1,13 @@
 package com.cjmalloy.torrentfs.editor.ui.fx.dialog;
 
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javafx.scene.control.Dialog;
+import javafx.scene.layout.Pane;
 import javafx.stage.Window;
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
 import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons;
 import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons.OkCancelDelegate;
@@ -30,9 +32,9 @@ public class SettingsDialog<T> {
    */
   public static final int CLOSED_OPTION = -1;
 
-  private Frame parent;
-  private JDialog dialog;
-  private JPanel layout;
+  private Window parent;
+  private Dialog dialog;
+  private Pane layout;
   private SettingsComponent<T> child;
   private OkCancelButtons okCancelButtons;
 
@@ -40,7 +42,8 @@ public class SettingsDialog<T> {
 
   public SettingsDialog(Window parent, String title, SettingsComponent<T> child) {
     this.parent = parent;
-    dialog = new JDialog(parent, title, true);
+    dialog = new Dialog();
+    dialog.setTitle(title);
     dialog.add(getLayout(child.getWidget()));
     dialog.addWindowListener(new WindowAdapter() {
       @Override

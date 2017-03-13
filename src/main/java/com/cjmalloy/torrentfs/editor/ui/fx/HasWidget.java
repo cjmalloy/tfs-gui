@@ -1,8 +1,8 @@
 package com.cjmalloy.torrentfs.editor.ui.fx;
 
-import javafx.scene.Scene;
+import javafx.scene.Node;
 
 
 public interface HasWidget {
-  Scene getScene();
+  Node getWidget();
 }

@@ -9,7 +9,7 @@ import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.event.DoShutdownNow;
 import com.cjmalloy.torrentfs.editor.ui.TopLevel;
-import com.cjmalloy.torrentfs.editor.ui.fx.dialog.Dialog;
+import com.cjmalloy.torrentfs.editor.ui.fx.dialog.TfsDialog;
 import com.cjmalloy.torrentfs.editor.ui.fx.view.MainView;
 import com.cjmalloy.torrentfs.editor.ui.fx.view.View;
 import com.google.common.eventbus.Subscribe;
@@ -68,7 +68,7 @@ public class MainWindow extends Application implements TopLevel {
 
     Controller.EVENT_BUS.register(this);
 
-    Dialog.loadAllDialogs(primaryStage);
+    TfsDialog.loadAllDialogs(primaryStage);
     setView(new MainView());
   }
 

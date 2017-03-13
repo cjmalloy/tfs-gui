@@ -1,19 +1,17 @@
 package com.cjmalloy.torrentfs.editor.ui.fx.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.model.document.MainDocument;
-import com.cjmalloy.torrentfs.editor.ui.swing.skin.IconBundle;
+import com.cjmalloy.torrentfs.editor.ui.fx.skin.IconBundle;
 import com.google.common.eventbus.Subscribe;
 
 
@@ -27,7 +25,7 @@ public class MainView implements View {
   private Scene scene;
   private BorderPane parent;
   private SplitPane splitPane;
-  private Pane leftArea;
+  private BorderPane leftArea;
   private EditorView editorView;
   private ToolBar toolbar;
   private FileSystemView fileSystemView;
@@ -40,11 +38,17 @@ public class MainView implements View {
 
   public Scene getScene() {
     if (scene == null) {
-      parent = new BorderPane();
-      scene = new Scene(parent);
-      parent.setCenter(getSplitPane());
+      scene = new Scene(getWidget());
     }
     return scene;
+  }
+
+  public Parent getWidget() {
+    if (parent == null) {
+      parent = new BorderPane();
+      parent.setCenter(getSplitPane());
+    }
+    return parent;
   }
 
   @Subscribe
@@ -55,21 +59,16 @@ public class MainView implements View {
   private EditorView getEditorView() {
     if (editorView == null) {
       editorView = new EditorView();
-      editorView.getScene().setMinimumSize(new Dimension(MIN_SPLIT_RIGHT, 0));
+      editorView.getWidget().setMinWidth(MIN_SPLIT_RIGHT);
     }
     return editorView;
   }
 
   private Button getExportButton() {
     if (exportButton == null) {
-      exportButton = new Button(IconBundle.get().exportIcon);
-      exportButton.setToolTipText(R.getString("exportButtonTooltip"));
-      exportButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          MainController.get().export();
-        }
-      });
+      exportButton = new Button("", new ImageView(IconBundle.get().exportIcon));
+      Tooltip.install(exportButton, new Tooltip(R.getString("exportButtonTooltip")));
+      exportButton.setOnAction(e -> MainController.get().export());
     }
     return exportButton;
   }
@@ -83,43 +82,36 @@ public class MainView implements View {
 
   private Pane getLeftArea() {
     if (leftArea == null) {
-      leftArea = new Pane();
-      leftArea.setLayout(new BorderLayout());
-      leftArea.setMinimumSize(new Dimension(MIN_SPLIT_LEFT, 0));
-      leftArea.add(getToolbar(), BorderLayout.NORTH);
-      leftArea.add(getFilesystemView().getScene(), BorderLayout.CENTER);
+      leftArea = new BorderPane();
+      leftArea.setMinWidth(MIN_SPLIT_LEFT);
+      leftArea.setTop(getToolbar());
+      leftArea.setCenter(getFilesystemView().getWidget());
     }
     return leftArea;
   }
 
   private Button getOpenButton() {
     if (openButton == null) {
-      openButton = new Button(IconBundle.get().openIcon);
-      openButton.setToolTipText(R.getString("openButtonTooltip"));
-      openButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          MainController.get().open();
-        }
-      });
+      openButton = new Button("", new ImageView(IconBundle.get().openIcon));
+      Tooltip.install(openButton, new Tooltip(R.getString("openButtonTooltip")));
+      openButton.setOnAction(e -> MainController.get().open());
     }
     return openButton;
   }
 
   private SplitPane getSplitPane() {
     if (splitPane == null) {
-      splitPane = new SplitPane();
-      splitPane.getItems().addAll(getLeftArea(), getEditorView().getScene());
-      splitPane.setDividerLocation(DEFAULT_SPLIT);
+      splitPane = new SplitPane(getLeftArea(), getEditorView().getWidget());
+      splitPane.setDividerPositions(DEFAULT_SPLIT);
     }
     return splitPane;
   }
 
   private ToolBar getToolbar() {
     if (toolbar == null) {
-      toolbar = new ToolBar();
-      toolbar.add(getOpenButton());
-      toolbar.add(getExportButton());
+      toolbar = new ToolBar(
+        getOpenButton(),
+        getExportButton());
     }
     return toolbar;
   }
