@@ -1,19 +1,17 @@
 package com.cjmalloy.torrentfs.editor.ui.fx.view;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 
 import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.model.EditorFileModel;
 import com.cjmalloy.torrentfs.editor.model.EditorModel;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.ButtonTabComponent;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.FileEditor;
+import com.cjmalloy.torrentfs.editor.ui.fx.component.FileEditor;
 import com.google.common.eventbus.Subscribe;
 
 
@@ -38,6 +36,7 @@ public class EditorView implements View {
   public TabPane getWidget() {
     if (tabs == null) {
       tabs = new TabPane();
+      tabs.setTabClosingPolicy(TabClosingPolicy.SELECTED_TAB);
     }
     return tabs;
   }
@@ -50,15 +49,10 @@ public class EditorView implements View {
       FileEditor e = new FileEditor(f);
       files.add(f);
       fileEditors.add(e);
-      getWidget().getTabs().add(new Tab(f.getTitle(), e.getWidget()));
+      Tab t = new Tab(f.getTitle(), e.getWidget());
+      getWidget().getTabs().add(t);
       final EditorFileModel _f = f;
-      getWidget().setTabComponentAt(getWidget().getTabCount() - 1, new ButtonTabComponent(getWidget(),
-          new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-              MainController.get().editor.maybeClose(_f);
-            }
-        }).getWidget());
+      t.setOnCloseRequest(event -> MainController.get().editor.maybeClose(_f));
     }
     for (int i = files.size() - 1; i >= 0; i--) {
       EditorFileModel f = files.get(i);
@@ -68,12 +62,12 @@ public class EditorView implements View {
       e.close();
       fileEditors.remove(i);
       files.remove(i);
-      getWidget().remove(e.getWidget());
+      getWidget().getTabs().remove(e.getWidget());
     }
 
     if (currentEditor != model.activeFile) {
       currentEditor = model.activeFile;
-      getWidget().setSelectedIndex(currentEditor);
+      getWidget().getSelectionModel().select(currentEditor);
     }
   }
 }

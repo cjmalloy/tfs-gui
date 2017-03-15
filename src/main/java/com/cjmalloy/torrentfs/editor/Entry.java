@@ -43,7 +43,7 @@ public class Entry {
 
     CmdLineParser parser = new CmdLineParser();
     CmdLineParser.Option argHelp = parser.addBooleanOption('h', "help");
-    CmdLineParser.Option argUi = parser.addBooleanOption('u', "ui");
+    CmdLineParser.Option argUi = parser.addStringOption('u', "ui");
 
     try {
       parser.parse(args);

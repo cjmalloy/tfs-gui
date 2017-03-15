@@ -14,8 +14,6 @@ import com.cjmalloy.torrentfs.editor.controller.Controller;
 import com.cjmalloy.torrentfs.editor.controller.MainController;
 import com.cjmalloy.torrentfs.editor.event.FileModificationEvent;
 import com.cjmalloy.torrentfs.editor.model.FileSystemModel;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.PopupMenu;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.TfsTreeCellRenderer;
 import com.cjmalloy.torrentfs.editor.ui.swing.model.FileTreeModel;
 import com.google.common.eventbus.Subscribe;
 

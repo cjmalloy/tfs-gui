@@ -5,13 +5,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Window;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
 
-import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.OkCancelButtons.OkCancelDelegate;
-import com.cjmalloy.torrentfs.editor.ui.swing.component.SettingsComponent;
+import com.cjmalloy.torrentfs.editor.ui.fx.component.OkCancelButtons;
+import com.cjmalloy.torrentfs.editor.ui.fx.component.SettingsComponent;
 
 
 public class SettingsDialog<T> {
@@ -44,7 +42,7 @@ public class SettingsDialog<T> {
     this.parent = parent;
     dialog = new Dialog();
     dialog.setTitle(title);
-    dialog.add(getLayout(child.getWidget()));
+    dialog.setDialogPane(getLayout(child.getWidget()));
     dialog.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -84,12 +82,10 @@ public class SettingsDialog<T> {
     return okCancelButtons;
   }
 
-  private JPanel getLayout(Component child) {
+  private Pane getLayout(Component child) {
     if (layout == null) {
-      layout = new JPanel();
-      layout.setLayout(new BoxLayout(layout, BoxLayout.PAGE_AXIS));
-      layout.add(child);
-      layout.add(getButtons().getWidget());
+      layout = new VBox();
+      layout.getChildren().addAll(child, getButtons().getWidget());
     }
     return layout;
   }

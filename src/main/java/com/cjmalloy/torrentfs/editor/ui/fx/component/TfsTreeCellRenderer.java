@@ -1,44 +1,41 @@
 package com.cjmalloy.torrentfs.editor.ui.fx.component;
 
-import java.awt.Component;
 import java.io.File;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import javafx.scene.control.TreeCell;
+import javafx.scene.image.ImageView;
 
 import com.cjmalloy.torrentfs.editor.controller.MainController;
-import com.cjmalloy.torrentfs.editor.ui.swing.model.FileTreeModel.TreeFile;
-import com.cjmalloy.torrentfs.editor.ui.swing.skin.IconBundle;
+import com.cjmalloy.torrentfs.editor.ui.fx.model.FileTreeModel.TreeFile;
+import com.cjmalloy.torrentfs.editor.ui.fx.skin.IconBundle;
 
 
 @SuppressWarnings("serial")
-public class TfsTreeCellRenderer extends DefaultTreeCellRenderer {
+public class TfsTreeCellRenderer extends TreeCell<TreeFile> {
   public TfsTreeCellRenderer() {
     setClosedIcon(IconBundle.get().treeClosedFolderIcon);
     setOpenIcon(IconBundle.get().treeOpenFolderIcon);
-    setLeafIcon(IconBundle.get().treeFileDefaultIcon);
   }
 
   @Override
-  public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row,
-                                                boolean hasFocus) {
-    super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-    if (!(value instanceof TreeFile)) return this;
-
+  public void updateItem(TreeFile item, boolean empty) {
     // Create a new file because TreeFile overrides .toString and that will
     // mess up code that does not expect this
-    File f = ((TreeFile) value).getAbsoluteFile();
-    if (tree.getModel().getRoot().equals(f)) {
-      setIcon(IconBundle.get().treeRootIcon);
+    File f = item.getAbsoluteFile();
+    if (getTreeView().getRoot().equals(f)) {
+      setGraphic(new ImageView(IconBundle.get().treeRootIcon));
     } else if (f.toString().endsWith(".tfs")) {
-      setIcon(IconBundle.get().treeTfsIcon);
+      setGraphic(new ImageView(IconBundle.get().treeTfsIcon));
     } else if (MainController.get().isNested(f)) {
       if (MainController.get().isLocked(f)) {
-        setIcon(IconBundle.get().treeReadOnlyIcon);
+        setGraphic(new ImageView(IconBundle.get().treeReadOnlyIcon));
       } else {
-        setIcon(IconBundle.get().treeNestedIcon);
+        setGraphic(new ImageView(IconBundle.get().treeNestedIcon));
       }
+    } else if (f.isDirectory()) {
+      if ()
+    } else {
+      setGraphic(new ImageView(IconBundle.get().treeFileDefaultIcon));
     }
     //TODO: other mime types
-    return this;
   }
 }
